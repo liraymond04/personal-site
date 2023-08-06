@@ -1,7 +1,6 @@
-<script>
-	export let depth;
-	export let raw;
-	// export let text;
+<script lang="ts">
+	export let depth: number;
+	export let raw: string;
 </script>
 
 {#if depth === 1}
