@@ -3,7 +3,7 @@
 </script>
 
 <div class="flex">
-	<div class="hidden sm:flex shrink-0 w-[240px] mx-4 my-2 ">
+	<div class="hidden sm:flex shrink-0 w-[240px] my-2">
 		<Items />
 	</div>
 

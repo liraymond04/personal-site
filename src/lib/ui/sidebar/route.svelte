@@ -3,9 +3,11 @@
 
 	export let root_dir: string;
 	export let root_item: Item;
+
+	let dir = `${root_dir}/${root_item.name}`;
+	if (root_item.name === 'index') {
+		dir = `${root_dir}`;
+	}
 </script>
 
-<h1>
-	{root_item.name}
-	{root_dir}
-</h1>
+<li><a href={dir} class="">{root_item.name}</a></li>

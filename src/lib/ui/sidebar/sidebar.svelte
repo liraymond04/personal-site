@@ -12,4 +12,10 @@
 	export let root_item: Item;
 </script>
 
-<Menu {root_dir} {root_item} />
+<aside class="w-full">
+	<nav>
+		<ul class="flex flex-col space-y-1 menu menu-sm dropdown-content" tabindex="0" role="menu">
+			<Menu {root_dir} {root_item} />
+		</ul>
+	</nav>
+</aside>
