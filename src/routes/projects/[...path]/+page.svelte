@@ -4,8 +4,8 @@
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
 	import HeadingRenderer from '$lib/renderers/heading-renderer.svelte';
 	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
-	import OrderedlistitemRenderer from '$lib/renderers/orderedlistitem-renderer.svelte';
-	import UnorderedlistitemRenderer from '$lib/renderers/unorderedlistitem-renderer.svelte';
+	import ListRenderer from '$lib/renderers/list-renderer.svelte';
+	import ListitemRenderer from '$lib/renderers/listitem-renderer.svelte';
 
 	export let data;
 
@@ -17,6 +17,8 @@
 	renderers={{
 		heading: HeadingRenderer,
 		paragraph: ParagraphRenderer,
+		list: ListRenderer,
+		listitem: ListitemRenderer,
 		code: CodeRenderer,
 		codespan: CodespanRenderer
 	}}

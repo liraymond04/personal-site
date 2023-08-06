@@ -49,9 +49,12 @@ int main() {
 * This is a list
 * With two items
   1. And a sublist
+      3. different
+            4. ordered
+      5. start
   2. That is ordered
-    * With another
-    * Sublist inside
+      * With another
+  * Sublist inside
 
 | And this is | A table |
 |-------------|---------|
