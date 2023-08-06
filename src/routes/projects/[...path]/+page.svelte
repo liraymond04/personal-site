@@ -14,4 +14,8 @@
 
 <SvelteMarkdown
 	{source}
+	renderers={{
+		code: CodeRenderer,
+		codespan: CodespanRenderer
+	}}
 />
