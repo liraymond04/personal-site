@@ -15,6 +15,8 @@
 <SvelteMarkdown
 	{source}
 	renderers={{
+		heading: HeadingRenderer,
+		paragraph: ParagraphRenderer,
 		code: CodeRenderer,
 		codespan: CodespanRenderer
 	}}
