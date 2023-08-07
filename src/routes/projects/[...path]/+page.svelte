@@ -6,6 +6,7 @@
 	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
 	import ListRenderer from '$lib/renderers/list-renderer.svelte';
 	import ListitemRenderer from '$lib/renderers/listitem-renderer.svelte';
+	import LinkRenderer from '$lib/renderers/link-renderer.svelte';
 
 	export let data;
 
@@ -17,6 +18,7 @@
 	renderers={{
 		heading: HeadingRenderer,
 		paragraph: ParagraphRenderer,
+		link: LinkRenderer,
 		list: ListRenderer,
 		listitem: ListitemRenderer,
 		code: CodeRenderer,

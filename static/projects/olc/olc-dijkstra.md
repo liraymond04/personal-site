@@ -8,7 +8,9 @@ test body
 
 ### test
 
-test body
+test [body](https://google.com)
+
+<https://example.com>
 
 ```js
 import { page } from '$app/stores'
@@ -22,7 +24,17 @@ test body
 
 ##### test
 
-test body
+__test__
+***~~body~~***
+
+> with a quote
+
+[hobbit-hole][1]
+
+[hobbits][2]
+
+[1]: <https://en.wikipedia.org/wiki/Hobbit#Lifestyle> (Hobbit lifestyles)
+[2]: <https://en.wikipedia.org/wiki/Hobbit#Lifestyle>
 
 ###### test
 
@@ -30,6 +42,8 @@ test body
 let's
 **fucking**
 *goooo*
+
+***
 
 this is a list:
  - first `item`

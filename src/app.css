@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+	.link-base {
+		@apply text-blue-600;
+	}
+  
+	.link-base:hover {
+		@apply text-blue-700;
+	}
+	
+	.link-base:focus {
+		@apply text-blue-700;
+	}
+	
+	.link-base:active {
+		@apply text-blue-800;
+	}
+
+	.link-visit {
+		@apply text-purple-600;
+	}
+	
+	.link-visit:hover {
+		@apply text-purple-700;
+	}
+	
+	.link-visit:focus {
+		@apply text-purple-700;
+	}
+	
+	.link-visit:active {
+		@apply text-purple-800;
+	}
+}
