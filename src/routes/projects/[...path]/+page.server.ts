@@ -7,10 +7,16 @@ export const load: PageServerLoad = async ({ params }) => {
 
   try {
     const files = import.meta.glob("/static/projects/**/*.md", { as: 'raw' });
-    const result = await files[`${dir}/${params.path}.md`]();
-    markdownContent = result
+    if (files[`${dir}/${params.path}.md`]) {
+      const result = await files[`${dir}/${params.path}.md`]();
+      markdownContent = result
+    } else {
+      const result = await files[`${dir}/${params.path}/index.md`]();
+      markdownContent = result
+    }
   } catch (e) {
-    throw error(404)
+    if (e instanceof Error)
+      throw error(404, e.message)
   }
 
   return {
