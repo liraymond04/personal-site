@@ -16,7 +16,7 @@
 
 	export let data;
 
-	let source = data.props.markdownContent;
+	$: source = data.props.markdownContent;
 </script>
 
 <SvelteMarkdown
