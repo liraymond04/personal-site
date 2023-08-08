@@ -1,11 +1,5 @@
-<script lang="ts" context="module">
-	export interface Item {
-		name: string;
-		children?: Item[];
-	}
-</script>
-
 <script lang="ts">
+	import type { Item } from './types'
 	import Menu from './menu.svelte';
 
 	export let root_dir: string;

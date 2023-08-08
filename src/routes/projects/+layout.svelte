@@ -1,15 +1,17 @@
 <script lang="ts">
-	import Items from './items.svelte';
+	import Sidebar from './sidebar.svelte';
+
+	export let data;
 </script>
 
 <div class="flex">
 	<div class="hidden sm:flex shrink-0 w-[240px] my-2">
-		<Items />
+		<Sidebar root={data.props.root} />
 	</div>
 
 	<main class="w-full">
 		<div class="sm:hidden w-full">
-			<Items />
+			<Sidebar root={data.props.root} />
 		</div>
 		<div class="mx-6 my-2">
 			<slot />
