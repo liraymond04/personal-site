@@ -2,6 +2,12 @@ import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import type { Item } from '$lib/ui/sidebar/types'
 
+const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
+  const pass: T[] = [], fail: T[] = [];
+  array.forEach((e, idx, arr) => (filter(e, idx, arr) ? pass : fail).push(e));
+  return [pass, fail];
+}
+
 export const load: LayoutServerLoad = async () => {
   const dir = '/static/projects'
   const root: Item = {
@@ -39,6 +45,15 @@ export const load: LayoutServerLoad = async () => {
   } catch (e) {
     if (e instanceof Error)
       throw error(404, e.message)
+  }
+
+  if (root.children) {
+    const index = root.children?.[0].name === 'index' ? root.children[0] : undefined
+    if (index) root.children.shift()
+    root.children.sort((a, b) => a.name.localeCompare(b.name))
+    const [folders, files] = partition<Item>(root.children, e => e.children !== undefined)
+    root.children = folders.concat(files)
+    if (index) root.children = [index].concat(root.children)
   }
 
   return {
