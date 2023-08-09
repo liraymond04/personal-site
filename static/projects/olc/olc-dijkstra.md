@@ -1,3 +1,9 @@
+---
+layout: project-post
+title: olc-dijkstra
+tags: C++, data structures & algorithms, graph theory, shortest path, OLC
+---
+
 # olc-dijkstra
 
 another test
