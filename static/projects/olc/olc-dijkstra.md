@@ -1,7 +1,10 @@
 ---
 layout: project-post
 title: olc-dijkstra
-tags: C++, data structures & algorithms, graph theory, shortest path, OLC
+tags: programming, data structures & algorithms, OLC
+keywords: C++, graph theory, shortest path
+date: 2023-08-13
+watched: 2021-07-25
 ---
 
 # olc-dijkstra

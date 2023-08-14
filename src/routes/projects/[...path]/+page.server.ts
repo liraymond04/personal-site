@@ -6,7 +6,8 @@ interface Metadata {
 }
 
 enum MetadataContentArray {
-  'tags'
+  'tags',
+  'keywords'
 }
 
 const isMetadataContentArray = (key: string): boolean => {
