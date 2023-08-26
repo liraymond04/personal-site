@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import type { Item } from '$lib/ui/sidebar/types'
+import { parseMetadata } from '$lib/metadata';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
   const pass: T[] = [], fail: T[] = [];
@@ -12,8 +13,12 @@ export const load: LayoutServerLoad = async () => {
   const dir = '/static/projects'
   const root: Item = {
     name: 'projects',
-    children: []
+    children: [],
   }
+
+  // special metadata for search and filtering
+  const tags: Set<string> = new Set()
+  const keywords: Set<string> = new Set()
 
   try {
     const files = import.meta.glob("/static/projects/**/*.md", { as: 'raw' });
@@ -22,21 +27,35 @@ export const load: LayoutServerLoad = async () => {
       const path = path_name.split('/')
 
       let cur_root = root
-      path.forEach((_path) => {
+
+      const result = await files[file]()
+      const markdownContent = result
+      const metadata = parseMetadata(markdownContent)
+
+      if (metadata['tags'] && Array.isArray(metadata['tags']))
+        metadata['tags'].forEach(tag => {
+          tags.add(tag)
+        });
+      if (metadata['keywords'] && Array.isArray(metadata['keywords']))
+        metadata['keywords'].forEach(keyword => {
+          keywords.add(keyword)
+        });
+
+      path.forEach(async (_path) => {
         if (_path === "") return;
         if (_path === "index.md") {
-          cur_root.children?.unshift({ name: _path.replace(".md", '') })
+          cur_root.children?.unshift({ name: _path.replace(".md", ''), metadata })
           return;
         }
         if (_path.includes(".md")) {
-          cur_root.children?.push({ name: _path.replace(".md", '') })
+          cur_root.children?.push({ name: _path.replace(".md", ''), metadata })
           return;
         }
         const found = cur_root.children?.find((i: Item) => i.name === _path)
         if (found) {
           cur_root = found
         } else {
-          const new_root: Item = { name: _path, children: [] }
+          const new_root: Item = { name: _path, children: [], metadata }
           cur_root.children?.push(new_root)
           cur_root = new_root
         }
@@ -58,7 +77,9 @@ export const load: LayoutServerLoad = async () => {
 
   return {
     props: {
-      root
+      root,
+      tags,
+      keywords
     }
   };
 }
