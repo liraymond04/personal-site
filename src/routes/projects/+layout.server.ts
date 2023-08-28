@@ -3,6 +3,11 @@ import type { LayoutServerLoad } from './$types';
 import type { Item } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
 
+interface SearchItem {
+  path: string
+  tags: string | string[]
+  keywords: string | string[]
+}
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
   const pass: T[] = [], fail: T[] = [];
   array.forEach((e, idx, arr) => (filter(e, idx, arr) ? pass : fail).push(e));
@@ -16,7 +21,7 @@ export const load: LayoutServerLoad = async () => {
     children: [],
   }
 
-  const items: string[] = []
+  const items: SearchItem[] = []
 
   // special metadata for search and filtering
   const tags: Set<string> = new Set()
@@ -30,6 +35,10 @@ export const load: LayoutServerLoad = async () => {
 
       let cur_root = root
 
+      const result = await files[file]()
+      const markdownContent = result
+      const metadata = parseMetadata(markdownContent)
+
       let item = ""
       if (path[path.length - 1] === "index.md") {
         item = path.filter((item, index) => index !== path.length - 1 && index !== 0).join('/')
@@ -37,11 +46,11 @@ export const load: LayoutServerLoad = async () => {
       else if (path[path.length - 1].includes(".md")) {
         item = [...path.filter((item, index) => index !== path.length - 1 && index !== 0), path[path.length - 1].replace(".md", '')].join('/')
       }
-      if (item) items.push(item)
-
-      const result = await files[file]()
-      const markdownContent = result
-      const metadata = parseMetadata(markdownContent)
+      if (item) items.push({
+        path: item,
+        tags: metadata.tags,
+        keywords: metadata.keywords
+      })
 
       if (metadata['tags'] && Array.isArray(metadata['tags']))
         metadata['tags'].forEach(tag => {
