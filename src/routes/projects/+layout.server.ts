@@ -16,6 +16,8 @@ export const load: LayoutServerLoad = async () => {
     children: [],
   }
 
+  const items: string[] = []
+
   // special metadata for search and filtering
   const tags: Set<string> = new Set()
   const keywords: Set<string> = new Set()
@@ -27,6 +29,15 @@ export const load: LayoutServerLoad = async () => {
       const path = path_name.split('/')
 
       let cur_root = root
+
+      let item = ""
+      if (path[path.length - 1] === "index.md") {
+        item = path.filter((item, index) => index !== path.length - 1 && index !== 0).join('/')
+      }
+      else if (path[path.length - 1].includes(".md")) {
+        item = [...path.filter((item, index) => index !== path.length - 1 && index !== 0), path[path.length - 1].replace(".md", '')].join('/')
+      }
+      if (item) items.push(item)
 
       const result = await files[file]()
       const markdownContent = result
@@ -78,6 +89,7 @@ export const load: LayoutServerLoad = async () => {
   return {
     props: {
       root,
+      items,
       tags,
       keywords
     }
