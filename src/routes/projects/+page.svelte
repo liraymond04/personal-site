@@ -1,21 +1,45 @@
 <script lang="ts">
-	import Fuse from 'fuse.js'
+	import Fuse from 'fuse.js';
 
 	export let data;
-	
-	const fuse = new Fuse(data.props.items, {
-		keys: ['path', 'tags', 'keywords']
-	})
+
+	let path = true,
+		tags = true,
+		keywords = true;
+
+	$: fuse = new Fuse(data.props.items, {
+		keys: [...(path ? ['path'] : []), ...(tags ? ['tags'] : []), ...(keywords ? ['keywords'] : [])]
+	});
 
 	let search = '';
-	$: results = fuse.search(search).map(i => i.item)
+	$: results = fuse.search(search).map((i) => i.item);
 
-	$: items = search ? results : data.props.items
+	$: items = search ? results : data.props.items;
 </script>
 
 <h1>Projects</h1>
 
-<input bind:value={search} type="text" class="mx-4 mt-4" placeholder="Search..." />
+<div class="flex space-x-2 mx-4 mt-4">
+	<input bind:value={search} type="text" placeholder="Search..." />
+	<button
+		on:click={() => {
+			path = !path;
+		}}
+		class={`p-1 h-auto rounded ${path && 'bg-gray-700'}`}>path</button
+	>
+	<button
+		on:click={() => {
+			tags = !tags;
+		}}
+		class={`p-1 h-auto rounded ${tags && 'bg-gray-700'}`}>tags</button
+	>
+	<button
+		on:click={() => {
+			keywords = !keywords;
+		}}
+		class={`p-1 h-auto rounded ${keywords && 'bg-gray-700'}`}>keywords</button
+	>
+</div>
 
 <div class="m-4">
 	{#each items as item}
