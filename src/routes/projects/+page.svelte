@@ -43,10 +43,23 @@
 	</div>
 </div>
 
-<div class="m-4">
+<div class="flex flex-col space-y-2 m-4">
 	{#each items as item}
-		<a class="flex flex-col hover:cursor-pointer hover:underline" href={`/projects/${item.path}`}
-			>{item.path}</a
-		>
+		<div class="m-2 underline-first-child group hover:cursor-pointer">
+			<a class="" href={`/projects/${item.path}`}>{item.path}</a>
+			<div class="flex flex-wrap space-x-1">
+				{#if item?.tags?.length > 0}
+					{#each item.tags as tag}
+						<div class="text-xs text-center bg-gray-700 rounded overflow-hidden">{tag}</div>
+					{/each}
+				{/if}
+			</div>
+		</div>
 	{/each}
 </div>
+
+<style>
+	.underline-first-child:hover > *:first-child {
+		text-decoration: underline;
+	}
+</style>
