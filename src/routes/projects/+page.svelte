@@ -47,10 +47,19 @@
 	{#each items as item}
 		<div class="m-2 underline-first-child group hover:cursor-pointer">
 			<a class="" href={`/projects/${item.path}`}>{item.path}</a>
-			<div class="flex flex-wrap space-x-1">
+			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.tags?.length > 0}
+					<div>tags: </div>
 					{#each item.tags as tag}
-						<div class="text-xs text-center bg-gray-700 rounded overflow-hidden">{tag}</div>
+						<div class="bg-gray-700 rounded overflow-hidden">{tag}</div>
+					{/each}
+				{/if}
+			</div>
+			<div class="flex flex-wrap space-x-1 text-xs text-center">
+				{#if item?.keywords?.length > 0}
+					<div>keywords: </div>
+					{#each item.keywords as keyword}
+						<div class="bg-gray-700 rounded overflow-hidden">{keyword}</div>
 					{/each}
 				{/if}
 			</div>
