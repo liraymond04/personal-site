@@ -46,20 +46,20 @@
 <div class="flex flex-col space-y-2 m-4">
 	{#each items as item}
 		<div class="m-2 underline-first-child group hover:cursor-pointer">
-			<a class="" href={`/projects/${item.path}`}>{item.path}</a>
+			<a href={`/projects/${item.path}`}>{item.path}</a>
 			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.tags?.length > 0}
-					<div>tags: </div>
+					<div class="mb-1">tags: </div>
 					{#each item.tags as tag}
-						<div class="bg-gray-700 rounded overflow-hidden">{tag}</div>
+						<div class="bg-gray-700 rounded overflow-hidden mb-1">{tag}</div>
 					{/each}
 				{/if}
 			</div>
 			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.keywords?.length > 0}
-					<div>keywords: </div>
+					<div class="mb-1">keywords: </div>
 					{#each item.keywords as keyword}
-						<div class="bg-gray-700 rounded overflow-hidden">{keyword}</div>
+						<div class="bg-gray-700 rounded overflow-hidden mb-1">{keyword}</div>
 					{/each}
 				{/if}
 			</div>
