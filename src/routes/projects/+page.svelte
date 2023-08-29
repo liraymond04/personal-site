@@ -19,26 +19,28 @@
 
 <h1>Projects</h1>
 
-<div class="flex space-x-2 mx-4 mt-4">
-	<input bind:value={search} type="text" placeholder="Search..." />
-	<button
-		on:click={() => {
-			path = !path;
-		}}
-		class={`p-1 h-auto rounded ${path && 'bg-gray-700'}`}>path</button
-	>
-	<button
-		on:click={() => {
-			tags = !tags;
-		}}
-		class={`p-1 h-auto rounded ${tags && 'bg-gray-700'}`}>tags</button
-	>
-	<button
-		on:click={() => {
-			keywords = !keywords;
-		}}
-		class={`p-1 h-auto rounded ${keywords && 'bg-gray-700'}`}>keywords</button
-	>
+<div class="flex flex-wrap items-center space-x-2 mx-4 mt-4">
+	<input bind:value={search} type="text" placeholder="Search..." class="h-8" />
+	<div class="py-4">
+		<button
+			on:click={() => {
+				path = !path;
+			}}
+			class={`p-1 h-auto rounded ${path && 'bg-gray-700'}`}>path</button
+		>
+		<button
+			on:click={() => {
+				tags = !tags;
+			}}
+			class={`p-1 h-auto rounded ${tags && 'bg-gray-700'}`}>tags</button
+		>
+		<button
+			on:click={() => {
+				keywords = !keywords;
+			}}
+			class={`p-1 h-auto rounded ${keywords && 'bg-gray-700'}`}>keywords</button
+		>
+	</div>
 </div>
 
 <div class="m-4">
