@@ -140,8 +140,8 @@
 
 <div class="flex flex-col space-y-2 m-4">
 	{#each items as item}
-		<div class="m-2 underline-first-child group hover:cursor-pointer">
-			<a href={`/projects/${item.path}`}>{item.path}</a>
+		<a href={`/projects/${item.path}`} class="m-2 underline-first-child group hover:cursor-pointer">
+			<div>{item.path}</div>
 			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.tags?.length > 0}
 					<div class="mb-1">tags:</div>
@@ -158,7 +158,7 @@
 					{/each}
 				{/if}
 			</div>
-		</div>
+		</a>
 	{/each}
 </div>
 
