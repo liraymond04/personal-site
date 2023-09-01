@@ -1,13 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import type { Item } from '$lib/ui/sidebar/types'
+import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
 
-interface SearchItem {
-  path: string
-  tags: string | string[]
-  keywords: string | string[]
-}
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
   const pass: T[] = [], fail: T[] = [];
   array.forEach((e, idx, arr) => (filter(e, idx, arr) ? pass : fail).push(e));
