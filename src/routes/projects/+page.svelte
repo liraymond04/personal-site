@@ -49,7 +49,7 @@
 			<a href={`/projects/${item.path}`}>{item.path}</a>
 			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.tags?.length > 0}
-					<div class="mb-1">tags: </div>
+					<div class="mb-1">tags:</div>
 					{#each item.tags as tag}
 						<div class="bg-gray-700 rounded overflow-hidden mb-1">{tag}</div>
 					{/each}
@@ -57,7 +57,7 @@
 			</div>
 			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.keywords?.length > 0}
-					<div class="mb-1">keywords: </div>
+					<div class="mb-1">keywords:</div>
 					{#each item.keywords as keyword}
 						<div class="bg-gray-700 rounded overflow-hidden mb-1">{keyword}</div>
 					{/each}
