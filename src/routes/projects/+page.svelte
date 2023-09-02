@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { SearchItem } from '$lib/ui/sidebar/types.js';
 	import Fuse from 'fuse.js';
+	/* eslint-disable */
+	// @ts-ignore
+	import Popover from 'svelte-popover';
 	import 'iconify-icon';
 
 	export let data;
@@ -62,7 +65,12 @@
 
 <div class="flex flex-col space-y-2 mx-4 mt-4">
 	{#each additional as search, index}
-		<div class="flex flex-wrap items-center space-x-2">
+		{#if index !== 0}
+			<div>
+				{search.function.toUpperCase()}
+			</div>
+		{/if}
+		<div class="flex flex-wrap content-center items-center space-x-2">
 			<input bind:value={search.val} type="text" placeholder="Search..." class="h-8" />
 			<div class="py-2">
 				<button
@@ -105,24 +113,49 @@
 					class={`p-1 h-auto rounded ${search.keywords && 'bg-gray-700'}`}>keywords</button
 				>
 			</div>
-			<button
-				class="flex content-center hover:cursor-pointer"
-				on:click={() => {
-					additional.push({
-						val: '',
-						path: true,
-						tags: true,
-						keywords: true,
-						function: 'and',
-						fuse: new Fuse(data.props.items, {
-							keys: ['path', 'tags', 'keywords']
-						})
-					});
-					additional = additional;
-				}}
-			>
-				<iconify-icon icon="ic:baseline-add-circle-outline" class="text-xl" />
-			</button>
+			{#if index === 0}
+				<Popover arrowColor="#374151" overlayColor="#00000000" action="click">
+					<button slot="target" class="flex h-[30px] content-center items-center">
+						<iconify-icon icon="ic:baseline-add-circle-outline" class="text-xl" />
+					</button>
+					<div slot="content" class="flex space-x-2 rounded bg-gray-700 -ml-1 p-2">
+						<button
+							on:click={() => {
+								additional.push({
+									val: '',
+									path: true,
+									tags: true,
+									keywords: true,
+									function: 'and',
+									fuse: new Fuse(data.props.items, {
+										keys: ['path', 'tags', 'keywords']
+									})
+								});
+								additional = additional;
+							}}
+						>
+							AND
+						</button>
+						<button
+							on:click={() => {
+								additional.push({
+									val: '',
+									path: true,
+									tags: true,
+									keywords: true,
+									function: 'or',
+									fuse: new Fuse(data.props.items, {
+										keys: ['path', 'tags', 'keywords']
+									})
+								});
+								additional = additional;
+							}}
+						>
+							OR
+						</button>
+					</div>
+				</Popover>
+			{/if}
 			{#if index !== 0}
 				<button
 					class="flex content-center hover:cursor-pointer"
