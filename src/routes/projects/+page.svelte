@@ -59,6 +59,46 @@
 		additional.reduce((total, i) => total + (i.val !== '' ? 1 : 0), 0) !== 0
 			? resolve(results)
 			: data.props.items;
+
+	let sort = 'ascending';
+
+	$: if (sort === 'ascending') {
+		items = items.sort((a, b) => a.path.localeCompare(b.path));
+	}
+
+	$: if (sort === 'descending') {
+		items = items.sort((a, b) => -1 * a.path.localeCompare(b.path));
+	}
+
+	$: if (sort === 'date-newest') {
+		items = items.sort((a, b) => {
+			if (!a.date) {
+				if (!b.date) {
+					return -1;
+				}
+				return 1;
+			}
+			if (!b.date) return -1;
+			const c = Date.parse(a.date.toString());
+			const d = Date.parse(b.date.toString());
+			return c - d;
+		});
+	}
+
+	$: if (sort === 'date-oldest') {
+		items = items.sort((a, b) => {
+			if (!a.date) {
+				if (!b.date) {
+					return -1;
+				}
+				return 1;
+			}
+			if (!b.date) return -1;
+			const c = Date.parse(a.date.toString());
+			const d = Date.parse(b.date.toString());
+			return -1 * (c - d);
+		});
+	}
 </script>
 
 <h1>Projects</h1>
@@ -169,6 +209,16 @@
 			{/if}
 		</div>
 	{/each}
+</div>
+
+<div class="mx-4 mt-4">
+	<label for="sort">Sort by:</label>
+	<select bind:value={sort} name="sort" id="sort">
+		<option value="ascending">Ascending (A-Z)</option>
+		<option value="descending">Descending (Z-A)</option>
+		<option value="date-newest">Date (newest)</option>
+		<option value="date-oldest">Date (oldest)</option>
+	</select>
 </div>
 
 <div class="flex flex-col space-y-2 m-4">

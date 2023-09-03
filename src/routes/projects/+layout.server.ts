@@ -44,7 +44,9 @@ export const load: LayoutServerLoad = async () => {
       if (item) items.push({
         path: item,
         tags: metadata.tags,
-        keywords: metadata.keywords
+        keywords: metadata.keywords,
+        date: metadata.date,
+        watched: metadata.watched
       })
 
       if (metadata['tags'] && Array.isArray(metadata['tags']))
