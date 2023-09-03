@@ -224,7 +224,17 @@
 <div class="flex flex-col space-y-2 m-4">
 	{#each items as item}
 		<a href={`/projects/${item.path}`} class="m-2 underline-first-child group hover:cursor-pointer">
-			<div>{item.path}</div>
+			<div class="flex flex-wrap justify-between">
+				<div>
+					{item.path}
+				</div>
+				{#if item.date}
+					<div>
+						{item.date}
+					</div>
+				{/if}
+			</div>
+
 			<div class="flex flex-wrap space-x-1 text-xs text-center">
 				{#if item?.tags?.length > 0}
 					<div class="mb-1">tags:</div>
