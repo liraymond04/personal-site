@@ -226,7 +226,7 @@
 		<a href={`/projects/${item.path}`} class="m-2 underline-first-child group hover:cursor-pointer">
 			<div class="flex justify-between space-x-2 max-w-2xl">
 				<div class="break-all line-clamp-3">
-					{item.path}asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasd
+					{item.path}
 				</div>
 				{#if item.date}
 					<div>
