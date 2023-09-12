@@ -9,7 +9,7 @@
 		<Sidebar root={data.props.root} />
 	</div>
 
-	<main class="w-full">
+	<main class="sm:max-w-[calc(100vw-240px)] w-full">
 		<div class="sm:hidden w-full">
 			<Sidebar root={data.props.root} />
 		</div>

@@ -224,9 +224,9 @@
 <div class="flex flex-col space-y-2 m-4">
 	{#each items as item}
 		<a href={`/projects/${item.path}`} class="m-2 underline-first-child group hover:cursor-pointer">
-			<div class="flex flex-wrap justify-between">
-				<div>
-					{item.path}
+			<div class="flex justify-between space-x-2 max-w-2xl">
+				<div class="break-all line-clamp-3">
+					{item.path}asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasd
 				</div>
 				{#if item.date}
 					<div>
