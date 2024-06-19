@@ -4,7 +4,7 @@
 	export let data;
 </script>
 
-<div class="flex">
+<div class="flex pb-12">
 	<div class="hidden sm:flex shrink-0 w-[240px] my-2">
 		<Sidebar root={data.props.root} />
 	</div>

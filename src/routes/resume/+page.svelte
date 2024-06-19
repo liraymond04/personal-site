@@ -1,4 +1,4 @@
-<div class="mt-6 grid h-[calc(100vh-120px)] place-items-center">
+<div class="mt-6 pb-12 grid h-[calc(100vh-120px)] place-items-center">
 	<div class="w-[80%] h-full">
 		<object
 			title="resume"
