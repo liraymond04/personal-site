@@ -1,4 +1,4 @@
-<div class="pt-8 pb-16 w-full">
+<div class="pt-8 pb-16 px-6 w-full">
 	<div class="flex-col space-y-4 mx-auto max-w-lg">
 		<p>
 			Hi! I'm Raymond Li, and I'm a software developer and a <b
