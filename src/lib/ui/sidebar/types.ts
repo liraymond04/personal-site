@@ -1,3 +1,5 @@
+import type Fuse from 'fuse.js';
+
 export interface Item {
   name: string;
   children?: Item[];
@@ -12,12 +14,22 @@ export interface SearchItem {
   watched: string | string[]
 }
 
+export interface Search {
+  val: string;
+  path: boolean;
+  tags: boolean;
+  keywords: boolean;
+  function: 'and' | 'or';
+  fuse: Fuse<SearchItem>;
+}
+
+
 export interface Metadata {
-	[name: string]: string | string[]
+  [name: string]: string | string[]
 }
 
 export enum MetadataContentArray {
-	'tags',
-	'keywords'
+  'tags',
+  'keywords'
 }
 

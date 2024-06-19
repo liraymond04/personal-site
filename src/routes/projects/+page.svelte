@@ -6,6 +6,8 @@
 	import Popover from 'svelte-popover';
 	import 'iconify-icon';
 	import SearchButton from '$lib/ui/search-button/search-button.svelte';
+	import SearchAdditionalAdd from '$lib/ui/search-button/search-additional-add.svelte';
+	import SearchAdditionalRemove from '$lib/ui/search-button/search-additional-remove.svelte';
 
 	export let data;
 
@@ -114,63 +116,25 @@
 		<div class="flex flex-wrap content-center items-center space-x-2">
 			<input bind:value={search.val} type="text" placeholder="Search..." class="h-8 p-2 rounded" />
 			<div class="py-2">
-				<SearchButton bind:search bind:search_item={search.path} data={data.props.items}>path</SearchButton>
-				<SearchButton bind:search bind:search_item={search.tags} data={data.props.items}>tags</SearchButton>
-				<SearchButton bind:search bind:search_item={search.keywords} data={data.props.items}>keywords</SearchButton>
+				<SearchButton bind:search bind:search_item={search.path} data={data.props.items}
+					>path</SearchButton
+				>
+				<SearchButton bind:search bind:search_item={search.tags} data={data.props.items}
+					>tags</SearchButton
+				>
+				<SearchButton bind:search bind:search_item={search.keywords} data={data.props.items}
+					>keywords</SearchButton
+				>
 			</div>
 			{#if index === 0}
-				<Popover arrowColor="#374151" overlayColor="#00000000" action="click">
-					<button slot="target" class="flex h-[30px] content-center items-center">
-						<iconify-icon icon="ic:baseline-add-circle-outline" class="text-xl" />
-					</button>
-					<div slot="content" class="flex space-x-2 rounded bg-gray-700 -ml-1 p-2">
-						<button
-							on:click={() => {
-								additional.push({
-									val: '',
-									path: true,
-									tags: true,
-									keywords: true,
-									function: 'and',
-									fuse: new Fuse(data.props.items, {
-										keys: ['path', 'tags', 'keywords']
-									})
-								});
-								additional = additional;
-							}}
-						>
-							AND
-						</button>
-						<button
-							on:click={() => {
-								additional.push({
-									val: '',
-									path: true,
-									tags: true,
-									keywords: true,
-									function: 'or',
-									fuse: new Fuse(data.props.items, {
-										keys: ['path', 'tags', 'keywords']
-									})
-								});
-								additional = additional;
-							}}
-						>
-							OR
-						</button>
-					</div>
-				</Popover>
+				<SearchAdditionalAdd
+					bind:additional
+					data={data.props.items}
+					keys={['path', 'tags', 'keywords']}
+				/>
 			{/if}
 			{#if index !== 0}
-				<button
-					class="flex content-center hover:cursor-pointer"
-					on:click={() => {
-						additional.splice(index, 1);
-						additional = additional;
-					}}
-				>
-					<iconify-icon icon="ic:baseline-remove-circle-outline" class="text-xl" />
-				</button>
+				<SearchAdditionalRemove bind:additional index={index} />
 			{/if}
 		</div>
 	{/each}

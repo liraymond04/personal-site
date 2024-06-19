@@ -1,19 +1,10 @@
 <script lang="ts">
-	import type { SearchItem } from '$lib/ui/sidebar/types.js';
+	import type { Search } from '$lib/ui/sidebar/types.ts';
 	import Fuse from 'fuse.js';
 
-	interface Search {
-		val: string;
-		path: boolean;
-		tags: boolean;
-		keywords: boolean;
-		function: 'and' | 'or';
-		fuse: Fuse<SearchItem>;
-	}
-
-  export let search: Search;
-  export let search_item: boolean;
-  export let data;
+	export let search: Search;
+	export let search_item: boolean;
+	export let data;
 </script>
 
 <button
