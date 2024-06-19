@@ -5,6 +5,7 @@
 	// @ts-ignore
 	import Popover from 'svelte-popover';
 	import 'iconify-icon';
+	import SearchButton from '$lib/ui/search-button/search-button.svelte';
 
 	export let data;
 
@@ -113,45 +114,9 @@
 		<div class="flex flex-wrap content-center items-center space-x-2">
 			<input bind:value={search.val} type="text" placeholder="Search..." class="h-8 p-2 rounded" />
 			<div class="py-2">
-				<button
-					on:click={() => {
-						search.path = !search.path;
-						search.fuse = new Fuse(data.props.items, {
-							keys: [
-								...(search.path ? ['path'] : []),
-								...(search.tags ? ['tags'] : []),
-								...(search.keywords ? ['keywords'] : [])
-							]
-						});
-					}}
-					class={`p-1 h-auto rounded ${search.path && 'bg-gray-700'}`}>path</button
-				>
-				<button
-					on:click={() => {
-						search.tags = !search.tags;
-						search.fuse = new Fuse(data.props.items, {
-							keys: [
-								...(search.path ? ['path'] : []),
-								...(search.tags ? ['tags'] : []),
-								...(search.keywords ? ['keywords'] : [])
-							]
-						});
-					}}
-					class={`p-1 h-auto rounded ${search.tags && 'bg-gray-700'}`}>tags</button
-				>
-				<button
-					on:click={() => {
-						search.keywords = !search.keywords;
-						search.fuse = new Fuse(data.props.items, {
-							keys: [
-								...(search.path ? ['path'] : []),
-								...(search.tags ? ['tags'] : []),
-								...(search.keywords ? ['keywords'] : [])
-							]
-						});
-					}}
-					class={`p-1 h-auto rounded ${search.keywords && 'bg-gray-700'}`}>keywords</button
-				>
+				<SearchButton bind:search bind:search_item={search.path} data={data.props.items}>path</SearchButton>
+				<SearchButton bind:search bind:search_item={search.tags} data={data.props.items}>tags</SearchButton>
+				<SearchButton bind:search bind:search_item={search.keywords} data={data.props.items}>keywords</SearchButton>
 			</div>
 			{#if index === 0}
 				<Popover arrowColor="#374151" overlayColor="#00000000" action="click">
