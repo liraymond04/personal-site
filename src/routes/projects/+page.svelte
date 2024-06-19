@@ -111,7 +111,7 @@
 			</div>
 		{/if}
 		<div class="flex flex-wrap content-center items-center space-x-2">
-			<input bind:value={search.val} type="text" placeholder="Search..." class="h-8" />
+			<input bind:value={search.val} type="text" placeholder="Search..." class="h-8 p-2 rounded" />
 			<div class="py-2">
 				<button
 					on:click={() => {
@@ -213,7 +213,7 @@
 
 <div class="mx-4 mt-4">
 	<label for="sort">Sort by:</label>
-	<select bind:value={sort} name="sort" id="sort">
+	<select bind:value={sort} name="sort" id="sort" class="p-2 rounded">
 		<option value="ascending">Ascending (A-Z)</option>
 		<option value="descending">Descending (Z-A)</option>
 		<option value="date-newest">Date (newest)</option>
@@ -239,7 +239,7 @@
 				{#if item?.tags?.length > 0}
 					<div class="mb-1">tags:</div>
 					{#each item.tags as tag}
-						<div class="bg-gray-700 rounded overflow-hidden mb-1">{tag}</div>
+						<div class="bg-gray-700 rounded overflow-hidden mb-1 px-1">{tag}</div>
 					{/each}
 				{/if}
 			</div>
@@ -247,7 +247,7 @@
 				{#if item?.keywords?.length > 0}
 					<div class="mb-1">keywords:</div>
 					{#each item.keywords as keyword}
-						<div class="bg-gray-700 rounded overflow-hidden mb-1">{keyword}</div>
+						<div class="bg-gray-700 rounded overflow-hidden mb-1 px-1">{keyword}</div>
 					{/each}
 				{/if}
 			</div>
