@@ -1,5 +1,5 @@
 <div class="pt-8 pb-16 px-6 w-full">
-	<div class="flex-col space-y-4 mx-auto max-w-lg">
+	<div class="flex-col space-y-4 mx-auto max-w-3xl">
 		<p>
 			Hi! I'm Raymond Li, and I'm a software developer and a <b
 				>BSc Combined Major in Computer Science and Mathematics</b
