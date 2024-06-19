@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SearchItem } from '../sidebar/types';
+	import type { SearchItem } from "$lib/ui/sidebar/types";
 
 	export let items: SearchItem[];
 	export let sort: string;

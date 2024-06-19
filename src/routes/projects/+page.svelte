@@ -1,27 +1,13 @@
 <script lang="ts">
-	import type { SearchItem } from '$lib/ui/sidebar/types.js';
+	import type { Search } from '$lib/ui/sidebar/types.js';
 	import Fuse from 'fuse.js';
-	/* eslint-disable */
-	// @ts-ignore
-	import Popover from 'svelte-popover';
 	import 'iconify-icon';
-	import {
-		SearchButton,
-		SearchAdditionalAdd,
-		SearchAdditionalRemove,
-		Sort
-	} from '$lib/ui/asset-tree';
+	import { SearchComponent, ItemCard, Sort } from '$lib/ui/asset-tree';
+	import { handleSort } from '$lib/ui/asset-tree/handleSort.js';
 
 	export let data;
 
-	interface Search {
-		val: string;
-		path: boolean;
-		tags: boolean;
-		keywords: boolean;
-		function: 'and' | 'or';
-		fuse: Fuse<SearchItem>;
-	}
+	const keys = ['path', 'tags', 'keywords'];
 
 	let additional: Search[] = [
 		{
@@ -31,116 +17,23 @@
 			keywords: true,
 			function: 'and',
 			fuse: new Fuse(data.props.items, {
-				keys: ['path', 'tags', 'keywords']
+				keys: keys
 			})
 		}
 	];
 
-	function intersect<T>(a: T[], b: T[]) {
-		return a.filter(Set.prototype.has, new Set(b));
-	}
-
-	function union<T>(a: T[], b: T[]) {
-		return [...new Set([...a, ...b])];
-	}
-
-	function resolve(results: SearchItem[][]): SearchItem[] {
-		let result = results[0];
-
-		for (let i = 0; i < results.length; i++) {
-			if (additional[i].val === '') continue;
-			if (additional[i].function === 'and') {
-				result = intersect(result, results[i]);
-			} else if (additional[i].function === 'or') {
-				result = union(result, results[i]);
-			}
-		}
-
-		return result;
-	}
-
-	$: results = additional.map((item) => item.fuse.search(item.val).map((i) => i.item));
-
-	$: items =
-		additional.reduce((total, i) => total + (i.val !== '' ? 1 : 0), 0) !== 0
-			? resolve(results)
-			: data.props.items;
+	$: items = handleSort(data.props.items, additional);
 </script>
 
 <h1>Projects</h1>
 
-<div class="flex flex-col space-y-2 mx-4 mt-4">
-	{#each additional as search, index}
-		{#if index !== 0}
-			<div>
-				{search.function.toUpperCase()}
-			</div>
-		{/if}
-		<div class="flex flex-wrap content-center items-center space-x-2">
-			<input bind:value={search.val} type="text" placeholder="Search..." class="h-8 p-2 rounded" />
-			<div class="py-2">
-				<SearchButton bind:search bind:search_item={search.path} data={data.props.items}
-					>path</SearchButton
-				>
-				<SearchButton bind:search bind:search_item={search.tags} data={data.props.items}
-					>tags</SearchButton
-				>
-				<SearchButton bind:search bind:search_item={search.keywords} data={data.props.items}
-					>keywords</SearchButton
-				>
-			</div>
-			{#if index === 0}
-				<SearchAdditionalAdd
-					bind:additional
-					data={data.props.items}
-					keys={['path', 'tags', 'keywords']}
-				/>
-			{/if}
-			{#if index !== 0}
-				<SearchAdditionalRemove bind:additional {index} />
-			{/if}
-		</div>
-	{/each}
-</div>
+<SearchComponent class="mx-4 mt-4" bind:additional bind:data {keys} />
 
 <Sort class="mx-4 mt-4" bind:items sort="ascending" />
 
-<div class="flex flex-col space-y-2 m-4">
+<div class="flex flex-col space-y-1 m-4">
 	{#each items as item}
-		<a href={`/projects/${item.path}`} class="m-2 underline-first-child group hover:cursor-pointer">
-			<div class="flex justify-between space-x-2 max-w-2xl">
-				<div class="break-all line-clamp-3">
-					{item.path}
-				</div>
-				{#if item.date}
-					<div>
-						{item.date}
-					</div>
-				{/if}
-			</div>
-
-			<div class="flex flex-wrap space-x-1 text-xs text-center">
-				{#if item?.tags?.length > 0}
-					<div class="mb-1">tags:</div>
-					{#each item.tags as tag}
-						<div class="bg-gray-700 rounded overflow-hidden mb-1 px-1">{tag}</div>
-					{/each}
-				{/if}
-			</div>
-			<div class="flex flex-wrap space-x-1 text-xs text-center">
-				{#if item?.keywords?.length > 0}
-					<div class="mb-1">keywords:</div>
-					{#each item.keywords as keyword}
-						<div class="bg-gray-700 rounded overflow-hidden mb-1 px-1">{keyword}</div>
-					{/each}
-				{/if}
-			</div>
-		</a>
+		<ItemCard item={item}/>
 	{/each}
 </div>
 
-<style>
-	.underline-first-child:hover > *:first-child {
-		text-decoration: underline;
-	}
-</style>
