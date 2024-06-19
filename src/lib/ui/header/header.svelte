@@ -16,7 +16,7 @@
 	};
 </script>
 
-<div class="m-2">
+<div class="m-2 z-50">
 	<div class="navbar bg-base-100 rounded-lg drop-shadow-lg">
 		<div class="grow-0 w-[50%]">
 			<div
