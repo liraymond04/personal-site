@@ -1,5 +1,6 @@
 <script>
-	import Social from '../social/social.svelte';
+	import Link from '$lib/ui/shared/link.svelte';
+	import Social from '$lib/ui/social/social.svelte';
 </script>
 
 <footer class="footer footer-center py-6 bg-base-200 text-base-content rounded">
@@ -10,9 +11,7 @@
 	<aside>
 		<p>
 			2024 Raymond Li, GPL-3.0 on
-			<a class="link-base" href="https://github.com/liraymond04/personal-site" target="_blank"
-				>Github</a
-			>
+			<Link href="https://github.com/liraymond04/personal-site" newtab>Github</Link>
 		</p>
 	</aside>
 </footer>

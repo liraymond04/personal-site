@@ -1,3 +1,7 @@
+<script>
+	import Link from '$lib/ui/shared/link.svelte';
+</script>
+
 <div class="pt-8 pb-16 px-6 w-full">
 	<div class="flex-col space-y-4 mx-auto max-w-3xl">
 		<p>
@@ -14,23 +18,23 @@
 		<p>
 			In addition to academics, I have experience participating in programming contests such as
 			Waterloo's Canadian Computing Competition, the USA Computing Olympiad, and Google Kickstart;
-			game jams such Global Game Jam Vancouver; and Capture the Flag (CTF) cybersecurity
-			competitions such as jellyCTF.
+			game jams such as
+			<Link href="https://sabishi-angel.itch.io/jankbot" newtab>Global Game Jam Vancouver</Link>;
+			and Capture the Flag (CTF) cybersecurity competitions such as jellyCTF.
 		</p>
 		<p>
 			I also enjoy exploring ways to apply math and computer science concepts to real programming
 			problems. For example, in my game development project for a
-			<a class="link-base" href="https://github.com/liraymond04/olc-rts">
-				pixel-art style 2.5D RTS
-			</a>, I applied linear algebra and affine transformations to render a 3D-like hexagonal grid
-			and handle interactions with a hexagonal coordinate system.
+			<Link href="https://github.com/liraymond04/olc-rts" newtab>pixel-art style 2.5D RTS</Link>, I
+			applied linear algebra and affine transformations to render a 3D-like hexagonal grid and
+			handle interactions with a hexagonal coordinate system.
 		</p>
 		<p>
 			I have experience writing real software and designing complex systems, as shown in my
-			<a class="link-base" href="https://github.com/liraymond04/game-engine">game engine</a> project.
-			I used the composition pattern with dependency injection to handle scene loading with dynamic libraries,
-			and designed a hooks and events API for easily extending and modding the engine through injecting
-			run-time hooks and signing event calls.
+			<Link href="https://github.com/liraymond04/game-engine" newtab>game engine</Link>
+			project. I used the composition pattern with dependency injection to handle scene loading with
+			dynamic libraries, and designed a hooks and events API for easily extending and modding the engine
+			through injecting run-time hooks and signing event calls.
 		</p>
 		<p>
 			This game engine project also used data structures and algorithms such as trees and DFS for
@@ -42,9 +46,9 @@
 			I have passion and believe in free and open source software, I use Linux (Arch btw) and
 			Neovim, and enjoy contributing and supporting FOSS projects that I use a lot, whether its
 			game-modding tools such as
-			<a class="link-base" href="https://github.com/AurieFramework/Aurie">Aurie and YYToolkit</a>
+			<Link href="https://github.com/AurieFramework/Aurie" newtab>Aurie and YYToolkit</Link>
 			or programmatic animation software like
-			<a class="link-base" href="https://github.com/motion-canvas/motion-canvas">Motion Canvas</a>.
+			<Link href="https://github.com/motion-canvas/motion-canvas" newtab>Motion Canvas</Link>.
 		</p>
 	</div>
 </div>
