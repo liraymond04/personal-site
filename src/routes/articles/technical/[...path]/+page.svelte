@@ -15,24 +15,28 @@
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
 
 	export let data;
-
-	$: source = data.props.markdownContent;
 </script>
 
-<SvelteMarkdown
-	{source}
-	renderers={{
-		heading: HeadingRenderer,
-		paragraph: ParagraphRenderer,
-		link: LinkRenderer,
-		list: ListRenderer,
-		listitem: ListitemRenderer,
-		table: TableRenderer,
-		tablebody: TablebodyRenderer,
-		tablecell: TablecellRenderer,
-		tablehead: TableheadRenderer,
-		tablerow: TablerowRenderer,
-		code: CodeRenderer,
-		codespan: CodespanRenderer
-	}}
-/>
+{#await data.streaming.data}
+	<div class="p-8 flex justify-center">
+		<span class="loading loading-spinner loading-lg" />
+	</div>
+{:then source}
+	<SvelteMarkdown
+		source={source?.props.markdownContent}
+		renderers={{
+			heading: HeadingRenderer,
+			paragraph: ParagraphRenderer,
+			link: LinkRenderer,
+			list: ListRenderer,
+			listitem: ListitemRenderer,
+			table: TableRenderer,
+			tablebody: TablebodyRenderer,
+			tablecell: TablecellRenderer,
+			tablehead: TableheadRenderer,
+			tablerow: TablerowRenderer,
+			code: CodeRenderer,
+			codespan: CodespanRenderer
+		}}
+	/>
+{/await}

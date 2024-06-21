@@ -3,14 +3,14 @@ import type { PageServerLoad } from './$types';
 import { parseMetadata } from '$lib/metadata';
 import { getLatestCommitSha, getFileContentFromBlob, getCommitInfoFromPath } from '$lib/github';
 
-export const load: PageServerLoad = async ({ params, parent }) => {
+const run: PageServerLoad = async ({ params, parent }) => {
   const dir = '/static/articles/technical'
   const files = import.meta.glob(`/static/articles/technical/**/*.md`, { as: 'raw' })
 
   const data = await parent();
-  const is_index = data.props.items.filter(item => item.path === params.path)?.[0]
+  const check_path = `${dir}/${params.path}/index.md`
 
-  if (is_index) {
+  if (check_path in files) {
     let markdownContent = '';
 
     try {
@@ -79,7 +79,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 
   const content = await getFileContentFromBlob(github_owner, github_repo, commit_info.sha)
 
-  if (!content.content) {
+  if (content.content === undefined) {
     throw error(500, "Content from commit is empty.")
   }
 
@@ -102,4 +102,13 @@ export const load: PageServerLoad = async ({ params, parent }) => {
       markdownContent: decoded,
     },
   };
+}
+
+export const load: PageServerLoad = async (props) => {
+  return {
+    path: props.params.path,
+    streaming: {
+      data: run(props)
+    }
+  }
 }

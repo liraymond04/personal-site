@@ -133,7 +133,7 @@ const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], gith
 			if (pathInfo.path === 'files.yaml') {
 				const content = await getFileContentFromBlob(github_owner, github_repo, pathInfo.sha)
 
-				if (!content.content) {
+				if (content.content === undefined) {
 					throw new Error('File content is empty.')
 				}
 
@@ -167,7 +167,7 @@ const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], gith
 								items.push({
 									path: path,
 									tags: file.tags,
-									keywords:file.keywords
+									keywords: file.keywords
 								})
 							}
 						}
