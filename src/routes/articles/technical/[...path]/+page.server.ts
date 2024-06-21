@@ -7,18 +7,23 @@ const run: PageServerLoad = async ({ params, parent }) => {
   const dir = '/static/articles/technical'
   const files = import.meta.glob(`/static/articles/technical/**/*.md`, { as: 'raw' })
 
+  let params_path = params.path
+  if (params_path.endsWith('/index.md')) {
+    params_path = params_path.replace('/index.md', '')
+  }
+
   const data = await parent();
-  const check_path = `${dir}/${params.path}/index.md`
+  const check_path = `${dir}/${params_path}/index.md`
 
   if (check_path in files) {
     let markdownContent = '';
 
     try {
-      if (files[`${dir}/${params.path}.md`]) {
-        const result = await files[`${dir}/${params.path}.md`]();
+      if (files[`${dir}/${params_path}.md`]) {
+        const result = await files[`${dir}/${params_path}.md`]();
         markdownContent = result
       } else {
-        const result = await files[`${dir}/${params.path}/index.md`]();
+        const result = await files[`${dir}/${params_path}/index.md`]();
         markdownContent = result
       }
     } catch (e) {
@@ -41,7 +46,7 @@ const run: PageServerLoad = async ({ params, parent }) => {
     };
   }
 
-  const result = data.props.items.filter(item => params.path.includes(item.path))?.[0]
+  const result = data.props.items.filter(item => params_path.includes(item.path))?.[0]
   const path = `${dir}/${result.path}/index.md`
 
   let markdownContent = await files[path]()
@@ -64,7 +69,7 @@ const run: PageServerLoad = async ({ params, parent }) => {
   }
 
   const commit = await getLatestCommitSha(github_owner, github_repo)
-  const repo_path = params.path.replace(result.path, '')
+  const repo_path = params_path.replace(result.path, '')
   const commit_info_res = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit)
 
   if (!Array.isArray(commit_info_res)) {
@@ -105,8 +110,13 @@ const run: PageServerLoad = async ({ params, parent }) => {
 }
 
 export const load: PageServerLoad = async (props) => {
+  let params_path = props.params.path
+  if (params_path.endsWith('/index.md')) {
+    params_path = params_path.replace('/index.md', '')
+  }
+
   return {
-    path: props.params.path,
+    path: params_path,
     streaming: {
       data: run(props)
     }
