@@ -12,6 +12,14 @@
 		return link.hostname !== window.location.hostname;
 	}
 
+	if (!isExternalURL(href) && href.endsWith('/index.md')) {
+		href = href.replace('/index.md', '')
+	}
+
+	if (!isExternalURL(href) && href.endsWith('.md')) {
+		href = '../' + href.replace('.md', '')
+	}
+
 	$: dir = ''
 
 	$: {

@@ -18,6 +18,7 @@ test body
 ### test
 
 test [body](https://google.com)
+another [route](olc-rts.md)
 
 <https://example.com>
 
