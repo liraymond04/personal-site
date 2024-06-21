@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { parseMetadata } from '$lib/metadata';
-import { getLatestCommitSha, getMarkdownContentFromBlob, getCommitInfoFromPath } from '$lib/github';
+import { getLatestCommitSha, getFileContentFromBlob, getCommitInfoFromPath } from '$lib/github';
 
 export const load: PageServerLoad = async ({ params, parent }) => {
   const dir = '/static/articles/technical'
@@ -77,7 +77,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
     throw error(500, 'Commit info from Github path is empty.')
   }
 
-  const content = await getMarkdownContentFromBlob(github_owner, github_repo, commit_info.sha)
+  const content = await getFileContentFromBlob(github_owner, github_repo, commit_info.sha)
 
   if (!content.content) {
     throw error(500, "Content from commit is empty.")

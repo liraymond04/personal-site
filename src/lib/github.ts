@@ -65,7 +65,7 @@ export const getCommitInfoFromPath = async (owner: string, repo: string, path: s
 	return data
 }
 
-export const getMarkdownFilesFromCommit = async (owner: string, repo: string, commitSha: string): Promise<GithubTreePath[]> => {
+export const getFilesFromCommit = async (owner: string, repo: string, commitSha: string): Promise<GithubTreePath[]> => {
 	const { data } = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
 		owner: owner,
 		repo: repo,
@@ -76,13 +76,12 @@ export const getMarkdownFilesFromCommit = async (owner: string, repo: string, co
 		}
 	})
 
-	const markdownFiles = data.tree
-		.filter(item => item.type === 'blob' && item.path?.endsWith('.md'))
+	const markdownFiles = data.tree.filter(item => item.type === 'blob')
 
 	return markdownFiles
 }
 
-export const getMarkdownContentFromBlob = async (owner: string, repo: string, fileSha: string): Promise<GithubBlobContent> => {
+export const getFileContentFromBlob = async (owner: string, repo: string, fileSha: string): Promise<GithubBlobContent> => {
 	const { data } = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
 		owner: owner,
 		repo: repo,

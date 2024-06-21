@@ -1,7 +1,8 @@
 import { error } from '@sveltejs/kit';
+import { parse } from 'yaml'
 import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
-import { getCommitInfoFromPath, getLatestCommitSha, getMarkdownContentFromBlob, getMarkdownFilesFromCommit, type GithubTreePath } from './github';
+import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, type GithubTreePath } from './github';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
 	const pass: T[] = [], fail: T[] = [];
@@ -10,7 +11,7 @@ const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boole
 }
 
 export const loadAssetTree = async (dir: string, root: Item, files: Record<string, () => Promise<string>>) => {
-	const items: SearchItem[] = []
+	let items: SearchItem[] = []
 
 	// special metadata for search and filtering
 	const tags: Set<string> = new Set()
@@ -62,9 +63,9 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 
 					if (typeof github_owner === 'string' && typeof github_repo === 'string') {
 						const commit = await getLatestCommitSha(github_owner, github_repo)
-						const markdown_files = await getMarkdownFilesFromCommit(github_owner, github_repo, commit)
+						const markdown_files = await getFilesFromCommit(github_owner, github_repo, commit)
 
-						const data = await loadAssetTreeFromGitHub(cur_root, markdown_files, github_page_format)
+						const data = await loadAssetTreeFromGitHub(cur_root, markdown_files, github_owner, github_repo, github_page_format)
 						const new_root = data.props.root
 						cur_root = new_root
 						cur_root.github_remote = {
@@ -73,6 +74,7 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 							commit_sha: commit,
 							page_format: github_page_format
 						}
+						items = [...items, ...data.props.items]
 					}
 
 					continue;
@@ -115,8 +117,8 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 	};
 }
 
-export const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], github_page_format: boolean) => {
-	const items: SearchItem[] = [];
+const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], github_owner: string, github_repo: string, github_page_format: boolean) => {
+	const items: SearchItem[] = []
 
 	try {
 		for (const pathInfo of paths) {
@@ -124,21 +126,65 @@ export const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[
 				throw new Error('Path to github tree item is undefined.')
 			}
 
+			if (!pathInfo.sha) {
+				throw new Error('Commit sha for github tree item is undefined.')
+			}
+
+			if (pathInfo.path === 'files.yaml') {
+				const content = await getFileContentFromBlob(github_owner, github_repo, pathInfo.sha)
+
+				if (!content.content) {
+					throw new Error('File content is empty.')
+				}
+
+				if (content.encoding !== 'base64') {
+					throw new Error('Expected content encoding to be base64.')
+				}
+
+				const yaml_string = atob(content.content);
+				const parsed = parse(yaml_string)
+
+				interface Directory {
+					name: string
+					directories?: Directory[]
+					files?: {
+						name: string
+						tags?: string[]
+						keywords?: string[]
+					}[]
+				}
+
+				const iterate = async (directories: Directory[], cur_dir: string) => {
+					for (const dir of directories) {
+						const path = `${cur_dir}/${dir.name}`
+						if (dir.directories) {
+							iterate(dir.directories, path)
+						}
+
+						if (dir.files) {
+							const file = dir.files.find(item => item.name === 'index.md')
+							if (file) {
+								items.push({
+									path: path,
+									tags: file.tags,
+									keywords:file.keywords
+								})
+							}
+						}
+					}
+				}
+
+				iterate(parsed.directories, 'ctf-writeups')
+			}
+
 			const path = pathInfo.path.split('/');
 
-			let item = "";
 			if (path[path.length - 1] === "index.md") {
-				item = path.filter((_, index) => index !== path.length - 1 && index !== 0).join('/');
+				// item = path.filter((_, index) => index !== path.length - 1 && index !== 0).join('/');
 			} else if (path[path.length - 1].includes(".md")) {
 				if (github_page_format) {
 					continue;
 				}
-				item = [...path.filter((_, index) => index !== path.length - 1 && index !== 0), path[path.length - 1].replace(".md", '')].join('/');
-			}
-			if (item) {
-				items.push({
-					path: item,
-				});
 			}
 
 			if (github_page_format) {
@@ -168,7 +214,8 @@ export const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[
 
 	return {
 		props: {
-			root
+			root,
+			items
 		}
 	};
 }
@@ -182,7 +229,7 @@ export const loadAssetMetadataFromGithub = async (root: Item) => {
 
 	const traverse = async (item: Item) => {
 		if (item.github_remote) {
-			const res = await getMarkdownFilesFromCommit(item.github_remote.owner, item.github_remote.repo, item.github_remote.commit_sha)
+			const res = await getFilesFromCommit(item.github_remote.owner, item.github_remote.repo, item.github_remote.commit_sha)
 
 			for (const file of res) {
 				if (!file.path?.endsWith('index.md')) {
@@ -198,7 +245,7 @@ export const loadAssetMetadataFromGithub = async (root: Item) => {
 					throw error(500, "Github commit sha is empty.")
 				}
 
-				const content = await getMarkdownContentFromBlob(item.github_remote.owner, item.github_remote.repo, file.sha)
+				const content = await getFileContentFromBlob(item.github_remote.owner, item.github_remote.repo, file.sha)
 
 				if (content.content == undefined) {
 					throw error(500, "Content from commit is empty.")

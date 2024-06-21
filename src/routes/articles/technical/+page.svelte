@@ -22,21 +22,12 @@
 		}
 	];
 
-	$: data = data
-	$: data.props.items = data.props.items
-
-	async function stream_github_content() {
-		const res = await data.streamed.github_content
-		data.props.items = [...new Set([...data.props.items ,...res.props.items])] 
-	}
-	stream_github_content()
-
 	$: items = handleSort(data.props.items, additional);
 </script>
 
 <h1>Technical Articles</h1>
 
-<SearchComponent class="mx-4 mt-4" bind:additional bind:data={data} {keys} />
+<SearchComponent class="mx-4 mt-4" bind:additional bind:data {keys} />
 
 <Sort class="mx-4 mt-4" bind:items sort="ascending" />
 
@@ -44,8 +35,5 @@
 	{#each items as item}
 		<ItemCard dir={`/${data.props.root.name}`} item={item}/>
 	{/each}
-	{#await data.streamed.github_content}
-		Loading...
-	{/await}
 </div>
 
