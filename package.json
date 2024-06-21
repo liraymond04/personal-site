@@ -37,6 +37,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@octokit/rest": "^20.1.1",
     "@rodneylab/svelte-social-icons": "^0.0.30",
     "fuse.js": "^6.6.2",
     "iconify-icon": "^1.0.8"

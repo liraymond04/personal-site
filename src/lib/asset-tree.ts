@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
+import { getCommitInfoFromPath, getLatestCommitSha, getMarkdownContentFromBlob, getMarkdownFilesFromCommit, type GithubTreePath } from './github';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
 	const pass: T[] = [], fail: T[] = [];
@@ -17,7 +18,6 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 
 	try {
 		for (const file in files) {
-			files
 			const path_name = file.replace(dir, '')
 			const path = path_name.split('/')
 
@@ -51,15 +51,35 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 					keywords.add(keyword)
 				});
 
-			path.forEach(async (_path) => {
-				if (_path === "") return;
+			for (const _path of path) {
+				if (_path === "") continue;
 				if (_path === "index.md") {
 					cur_root.children?.unshift({ name: _path.replace(".md", ''), metadata })
-					return;
+
+					const github_owner = metadata['github_owner']
+					const github_repo = metadata['github_repo']
+					const github_page_format = metadata['github_page_format'] === 'true'
+
+					if (typeof github_owner === 'string' && typeof github_repo === 'string') {
+						const commit = await getLatestCommitSha(github_owner, github_repo)
+						const markdown_files = await getMarkdownFilesFromCommit(github_owner, github_repo, commit)
+
+						const data = await loadAssetTreeFromGitHub(cur_root, markdown_files, github_page_format)
+						const new_root = data.props.root
+						cur_root = new_root
+						cur_root.github_remote = {
+							owner: github_owner,
+							repo: github_repo,
+							commit_sha: commit,
+							page_format: github_page_format
+						}
+					}
+
+					continue;
 				}
 				if (_path.includes(".md")) {
 					cur_root.children?.push({ name: _path.replace(".md", ''), metadata })
-					return;
+					continue;
 				}
 				const found = cur_root.children?.find((i: Item) => i.name === _path)
 				if (found) {
@@ -69,7 +89,7 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 					cur_root.children?.push(new_root)
 					cur_root = new_root
 				}
-			})
+			}
 		}
 	} catch (e) {
 		if (e instanceof Error)
@@ -85,6 +105,140 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 		if (index) root.children = [index].concat(root.children)
 	}
 
+	return {
+		props: {
+			root,
+			items,
+			tags,
+			keywords
+		}
+	};
+}
+
+export const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], github_page_format: boolean) => {
+	const items: SearchItem[] = [];
+
+	try {
+		for (const pathInfo of paths) {
+			if (!pathInfo.path) {
+				throw new Error('Path to github tree item is undefined.')
+			}
+
+			const path = pathInfo.path.split('/');
+
+			let item = "";
+			if (path[path.length - 1] === "index.md") {
+				item = path.filter((_, index) => index !== path.length - 1 && index !== 0).join('/');
+			} else if (path[path.length - 1].includes(".md")) {
+				if (github_page_format) {
+					continue;
+				}
+				item = [...path.filter((_, index) => index !== path.length - 1 && index !== 0), path[path.length - 1].replace(".md", '')].join('/');
+			}
+			if (item) {
+				items.push({
+					path: item,
+				});
+			}
+
+			if (github_page_format) {
+				path.pop()
+			}
+
+			let cur_root = root;
+			path.forEach(async (_path, i) => {
+				let contains = cur_root.children?.filter(item => item.name === _path)?.[0]
+
+				if (!contains) {
+					const new_item: Item = {
+						name: _path,
+						children: (i !== path.length - 1) ? [] : undefined
+					}
+					cur_root.children?.push(new_item)
+					contains = new_item
+				}
+
+				cur_root = contains
+			})
+		}
+	} catch (e) {
+		if (e instanceof Error)
+			throw error(404, e.message);
+	}
+
+	return {
+		props: {
+			root
+		}
+	};
+}
+
+export const loadAssetMetadataFromGithub = async (root: Item) => {
+	const items: SearchItem[] = []
+
+	// special metadata for search and filtering
+	const tags: Set<string> = new Set()
+	const keywords: Set<string> = new Set()
+
+	const traverse = async (item: Item) => {
+		if (item.github_remote) {
+			const res = await getMarkdownFilesFromCommit(item.github_remote.owner, item.github_remote.repo, item.github_remote.commit_sha)
+
+			for (const file of res) {
+				if (!file.path?.endsWith('index.md')) {
+					continue
+				}
+
+				let path = file.path
+				if (item.github_remote?.page_format) {
+					path = path.replace('/index.md', '')
+				}
+
+				if (!file.sha) {
+					throw error(500, "Github commit sha is empty.")
+				}
+
+				const content = await getMarkdownContentFromBlob(item.github_remote.owner, item.github_remote.repo, file.sha)
+
+				if (content.content == undefined) {
+					throw error(500, "Content from commit is empty.")
+				}
+
+				if (content.encoding !== 'base64') {
+					throw error(500, 'Expected content encoding to be base64.')
+				}
+
+				const markdownContent = atob(content.content);
+				const metadata = parseMetadata(markdownContent)
+
+				items.push({
+					path: `${item.name}/${path}`,
+					tags: metadata?.tags,
+					keywords: metadata?.keywords,
+					date: metadata?.date,
+					watched: metadata?.watched
+				});
+
+				if (metadata['tags'] && Array.isArray(metadata['tags']))
+					metadata['tags'].forEach(tag => {
+						tags.add(tag)
+					});
+				if (metadata['keywords'] && Array.isArray(metadata['keywords']))
+					metadata['keywords'].forEach(keyword => {
+						keywords.add(keyword)
+					});
+			}
+		}
+
+		// Recurse into children
+		if (item.children) {
+			for (const child of item.children) {
+				await traverse(child);
+			}
+		}
+	};
+
+	await traverse(root);
 	return {
 		props: {
 			root,

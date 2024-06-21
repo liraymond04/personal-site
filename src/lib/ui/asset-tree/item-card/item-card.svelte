@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { SearchItem } from "$lib/ui/sidebar/types";
+	import type { SearchItem } from '$lib/ui/sidebar/types';
 
-  export let item: SearchItem;
+	export let dir;
+	export let item: SearchItem;
 </script>
 
-<a href={`/projects/${item.path}`} class="p-2 underline-first-child group hover:cursor-pointer">
+<a href={`${dir}/${item.path}`} class="p-2 underline-first-child group hover:cursor-pointer">
 	<div class="flex justify-between space-x-2 max-w-2xl">
 		<div class="break-all line-clamp-3">
 			{item.path}
@@ -17,7 +18,7 @@
 	</div>
 
 	<div class="flex flex-wrap space-x-1 text-xs text-center">
-		{#if item?.tags?.length > 0}
+		{#if item?.tags?.length && item?.tags?.length > 0}
 			<div class="mb-1">tags:</div>
 			{#each item.tags as tag}
 				<div class="bg-gray-700 rounded overflow-hidden mb-1 px-1">{tag}</div>
@@ -25,7 +26,7 @@
 		{/if}
 	</div>
 	<div class="flex flex-wrap space-x-1 text-xs text-center">
-		{#if item?.keywords?.length > 0}
+		{#if item?.keywords?.length && item?.keywords?.length > 0}
 			<div class="mb-1">keywords:</div>
 			{#each item.keywords as keyword}
 				<div class="bg-gray-700 rounded overflow-hidden mb-1 px-1">{keyword}</div>

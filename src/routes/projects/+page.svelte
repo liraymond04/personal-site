@@ -33,7 +33,7 @@
 
 <div class="flex flex-col space-y-1 m-4">
 	{#each items as item}
-		<ItemCard item={item}/>
+		<ItemCard dir={`/${data.props.root.name}`} item={item}/>
 	{/each}
 </div>
 
