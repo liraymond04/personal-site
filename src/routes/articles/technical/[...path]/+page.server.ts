@@ -49,10 +49,6 @@ const run: PageServerLoad = async ({ params, parent }) => {
   const result = data.props.items.filter(item => params_path.includes(item.path))?.[0]
   const path = `${dir}/${result.path}/index.md`
 
-  console.log(params_path)
-  console.log(result)
-  console.log(path)
-
   let markdownContent = await files[path]()
   const metadata = parseMetadata(markdownContent)
   const start_metadata = markdownContent.indexOf('---')
