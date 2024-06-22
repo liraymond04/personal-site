@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Item } from './sidebar.svelte';
+	import type { Item } from './types';
 	import Route from './route.svelte';
 
 	export let root_dir: string;
