@@ -13,6 +13,7 @@
 	import TablerowRenderer from '$lib/renderers/tablerow-renderer.svelte';
 	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
+	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
 
 	export let source;
 </script>
@@ -31,6 +32,7 @@
 		tablehead: TableheadRenderer,
 		tablerow: TablerowRenderer,
 		code: CodeRenderer,
-		codespan: CodespanRenderer
+		codespan: CodespanRenderer,
+		blockquote: BlockquoteRenderer
 	}}
 />
