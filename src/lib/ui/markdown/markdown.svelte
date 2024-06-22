@@ -15,11 +15,18 @@
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
 	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
 
+	import EmojiConverter from 'emoji-js';
+
+	const emoji = new EmojiConverter();
+	emoji.replace_mode = 'unified';
+
 	export let source;
+
+	$: parsed = emoji.replace_colons(source);
 </script>
 
 <SvelteMarkdown
-	{source}
+	source={parsed}
 	renderers={{
 		heading: HeadingRenderer,
 		paragraph: ParagraphRenderer,

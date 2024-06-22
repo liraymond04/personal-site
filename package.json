@@ -39,6 +39,8 @@
   "dependencies": {
     "@octokit/rest": "^20.1.1",
     "@rodneylab/svelte-social-icons": "^0.0.30",
+    "@types/emoji-js": "^3.5.2",
+    "emoji-js": "^3.8.0",
     "fuse.js": "^6.6.2",
     "iconify-icon": "^1.0.8",
     "yaml": "^2.4.5"
