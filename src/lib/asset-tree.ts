@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { parse } from 'yaml'
 import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
-import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, type GithubTreePath } from './github';
+import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, type GithubTreePath, getCommitInfoFromPath } from './github';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
 	const pass: T[] = [], fail: T[] = [];
@@ -65,7 +65,7 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 						const commit = await getLatestCommitSha(github_owner, github_repo)
 						const markdown_files = await getFilesFromCommit(github_owner, github_repo, commit)
 
-						const data = await loadAssetTreeFromGitHub(cur_root, markdown_files, github_owner, github_repo, github_page_format)
+						const data = await loadAssetTreeFromGitHub(cur_root, markdown_files, github_owner, github_repo, commit)
 						const new_root = data.props.root
 						cur_root = new_root
 						cur_root.github_remote = {
@@ -117,96 +117,89 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 	};
 }
 
-const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], github_owner: string, github_repo: string, github_page_format: boolean) => {
+const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], github_owner: string, github_repo: string, commit_sha: string) => {
 	const items: SearchItem[] = []
 
 	try {
-		for (const pathInfo of paths) {
-			if (!pathInfo.path) {
-				throw new Error('Path to github tree item is undefined.')
-			}
+		const commit_info = await getCommitInfoFromPath(github_owner, github_repo, 'files.yaml', commit_sha)
 
-			if (!pathInfo.sha) {
-				throw new Error('Commit sha for github tree item is undefined.')
-			}
-
-			if (pathInfo.path === 'files.yaml') {
-				const content = await getFileContentFromBlob(github_owner, github_repo, pathInfo.sha)
-
-				if (content.content === undefined) {
-					throw new Error('File content is empty.')
-				}
-
-				if (content.encoding !== 'base64') {
-					throw new Error('Expected content encoding to be base64.')
-				}
-
-				const yaml_string = atob(content.content);
-				const parsed = parse(yaml_string)
-
-				interface Directory {
-					name: string
-					directories?: Directory[]
-					files?: {
-						name: string
-						tags?: string[]
-						keywords?: string[]
-					}[]
-				}
-
-				const iterate = async (directories: Directory[], cur_dir: string) => {
-					for (const dir of directories) {
-						const path = `${cur_dir}/${dir.name}`
-						if (dir.directories) {
-							iterate(dir.directories, path)
-						}
-
-						if (dir.files) {
-							const file = dir.files.find(item => item.name === 'index.md')
-							if (file) {
-								items.push({
-									path: path,
-									tags: file.tags,
-									keywords: file.keywords
-								})
-							}
-						}
-					}
-				}
-
-				iterate(parsed.directories, 'ctf-writeups')
-			}
-
-			const path = pathInfo.path.split('/');
-
-			if (path[path.length - 1] === "index.md") {
-				// item = path.filter((_, index) => index !== path.length - 1 && index !== 0).join('/');
-			} else if (path[path.length - 1].includes(".md")) {
-				if (github_page_format) {
-					continue;
-				}
-			}
-
-			if (github_page_format) {
-				path.pop()
-			}
-
-			let cur_root = root;
-			path.forEach(async (_path, i) => {
-				let contains = cur_root.children?.filter(item => item.name === _path)?.[0]
-
-				if (!contains) {
-					const new_item: Item = {
-						name: _path,
-						children: (i !== path.length - 1) ? [] : undefined
-					}
-					cur_root.children?.push(new_item)
-					contains = new_item
-				}
-
-				cur_root = contains
-			})
+		if (Array.isArray(commit_info)) {
+			throw Error('Path is not a valid file.')
 		}
+
+		if (commit_info.type !== 'file') {
+			throw Error('Path is not a valid file.')
+		}
+
+		if (commit_info.content === undefined) {
+			throw new Error('File content is empty.')
+		}
+
+		if (commit_info.encoding !== 'base64') {
+			throw new Error('Expected content encoding to be base64.')
+		}
+
+		const yaml_string = atob(commit_info.content);
+		const parsed = parse(yaml_string)
+
+		interface Directory {
+			name: string
+			directories?: Directory[]
+			files?: {
+				name: string
+				page?: boolean
+				tags?: string[]
+				keywords?: string[]
+			}[]
+		}
+
+		const iterate = async (cur_root: Item, directories: Directory[], cur_dir: string) => {
+			for (const dir of directories) {
+				const new_dir: Item = {
+					name: dir.name,
+					github_remote: {
+						owner: github_owner,
+						repo: github_repo,
+						commit_sha: commit_sha
+					}
+				}
+
+				let path = `${cur_dir}/${dir.name}`
+
+				if (dir.directories) {
+					new_dir.children = []
+					iterate(new_dir, dir.directories, path)
+				}
+
+				if (dir.files) {
+					const file = dir.files.find(item => item.name === 'index.md')
+					if (file) {
+						if (!file.page) {
+							const new_file = {
+								name: 'index',
+								github_remote: {
+									owner: github_owner,
+									repo: github_repo,
+									commit_sha: commit_sha,
+									page_format: file.page
+								}
+							}
+							new_dir.children?.unshift(new_file)
+							path += '/index'
+						}
+						items.push({
+							path: path,
+							tags: file.tags,
+							keywords: file.keywords
+						})
+					}
+				}
+
+				cur_root.children?.push(new_dir)
+			}
+		}
+
+		iterate(root, parsed.directories, 'ctf-writeups')
 	} catch (e) {
 		if (e instanceof Error)
 			throw error(404, e.message);

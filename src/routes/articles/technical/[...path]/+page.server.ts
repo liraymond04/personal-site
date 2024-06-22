@@ -49,6 +49,10 @@ const run: PageServerLoad = async ({ params, parent }) => {
   const result = data.props.items.filter(item => params_path.includes(item.path))?.[0]
   const path = `${dir}/${result.path}/index.md`
 
+  console.log(params_path)
+  console.log(result)
+  console.log(path)
+
   let markdownContent = await files[path]()
   const metadata = parseMetadata(markdownContent)
   const start_metadata = markdownContent.indexOf('---')
@@ -69,30 +73,39 @@ const run: PageServerLoad = async ({ params, parent }) => {
   }
 
   const commit = await getLatestCommitSha(github_owner, github_repo)
-  const repo_path = params_path.replace(result.path, '')
+  let repo_path = params_path.replace(result.path, '')
+  if (!data.props.items.find(item => item.path === params_path)) {
+    repo_path += '/index.md'
+  }
   const commit_info_res = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit)
 
+  let commit_info
+
   if (!Array.isArray(commit_info_res)) {
-    throw error(500, 'Commit info from Github path is empty.')
+    if (commit_info_res.type !== 'file') {
+      throw error(500, 'Path is not a valid file.')
+    }
+
+    commit_info = commit_info_res
+  } else {
+    const commit_info_item = commit_info_res.shift()
+
+    if (!commit_info_item) {
+      throw error(500, 'Commit info from Github path is empty.')
+    }
+
+    commit_info = await getFileContentFromBlob(github_owner, github_repo, commit_info_item.sha)
   }
 
-  const commit_info = commit_info_res.shift()
-
-  if (!commit_info) {
-    throw error(500, 'Commit info from Github path is empty.')
-  }
-
-  const content = await getFileContentFromBlob(github_owner, github_repo, commit_info.sha)
-
-  if (content.content === undefined) {
+  if (commit_info.content === undefined) {
     throw error(500, "Content from commit is empty.")
   }
 
-  if (content.encoding !== 'base64') {
+  if (commit_info.encoding !== 'base64') {
     throw error(500, 'Expected content encoding to be base64.')
   }
 
-  let decoded = atob(content.content);
+  let decoded = atob(commit_info.content);
   const decodedMetadata = parseMetadata(decoded)
 
   const start_decoded_metadata = decoded.indexOf('---')
