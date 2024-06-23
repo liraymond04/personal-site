@@ -22,6 +22,40 @@ const run: PageServerLoad = async ({ params, parent }) => {
 
   const data = await parent();
   const check_path = `${dir}/${params_path}/index.md`
+  const second_check_path = `${dir}/${params_path}.md`
+
+  // check local/static files and try to load this way first
+  if (check_path in files || second_check_path in files) {
+    let markdownContent = '';
+
+    try {
+      if (files[`${dir}/${params_path}.md`]) {
+        const result = await files[`${dir}/${params_path}.md`]();
+        markdownContent = result
+      } else {
+        const result = await files[`${dir}/${params_path}/index.md`]();
+        markdownContent = result
+      }
+    } catch (e) {
+      //
+    }
+
+    const metadata = parseMetadata(markdownContent)
+    const start_metadata = markdownContent.indexOf('---')
+    if (start_metadata === 0) {
+      const end_metadata = markdownContent.indexOf('---', 1)
+      markdownContent = markdownContent.substring(end_metadata + 3)
+    }
+
+    if (!metadata['github_owner'] || !metadata['github_repo']) {
+      return {
+        props: {
+          metadata,
+          markdownContent
+        }
+      }
+    }
+  }
 
   if (check_path in files) {
     return loadRemoteIndex(files, params_path, dir);
@@ -60,6 +94,7 @@ const run: PageServerLoad = async ({ params, parent }) => {
       markdownContent: decoded,
     },
   };
+
 }
 
 export const load: PageServerLoad = async (props) => {
@@ -73,3 +108,4 @@ export const load: PageServerLoad = async (props) => {
     }
   }
 }
+
