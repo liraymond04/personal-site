@@ -49,7 +49,7 @@
 				blockquote: BlockquoteRenderer,
 				pre: CodeRenderer,
 				code: CodespanRenderer,
-				katex: KatexRenderer
+				span: KatexRenderer
 			}
 		}
 	];
