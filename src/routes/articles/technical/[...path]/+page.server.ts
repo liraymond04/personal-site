@@ -38,6 +38,35 @@ const run: PageServerLoad = async ({ params, parent }) => {
       markdownContent = markdownContent.substring(end_metadata + 3)
     }
 
+    const github_owner = metadata['github_owner']
+    const github_repo = metadata['github_repo']
+
+    // Load README as index page if it exists
+    if (github_owner && !Array.isArray(github_owner) && github_repo && !Array.isArray(github_repo)) {
+      try {
+        const commit = await getLatestCommitSha(github_owner, github_repo)
+        const repo_path = '/README.md'
+        const commit_info = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit)
+
+        if (Array.isArray(commit_info)) {
+          throw new Error()
+        }
+
+        if (commit_info.type !== 'file') {
+          throw new Error()
+        }
+
+        if (commit_info.content === undefined) {
+          throw new Error()
+        }
+
+        const decoded = atob(commit_info.content);
+        markdownContent = decoded
+      } catch {
+        //
+      }
+    }
+
     return {
       props: {
         metadata,
