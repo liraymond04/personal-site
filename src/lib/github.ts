@@ -1,5 +1,7 @@
 import { GITHUB_TOKEN } from "$env/static/private";
 import { Octokit } from "@octokit/rest";
+import { error } from "@sveltejs/kit";
+import type { Metadata } from "./ui/sidebar/types";
 
 export interface GithubTreePath {
 	path?: string;
@@ -17,6 +19,30 @@ export interface GithubBlobContent {
 	url?: string;
 	content?: string;
 	encoding?: string;
+}
+
+export type GithubFileCommitInfo = {
+	type: "file";
+	size: number;
+	name: string;
+	path: string;
+	content?: string | undefined;
+	encoding?: string | undefined;
+	sha: string;
+	url: string;
+	git_url: string | null;
+	html_url: string | null;
+	download_url: string | null;
+	_links: {
+		git: string | null;
+		html: string | null;
+		self: string;
+	};
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function IsGithubFileCommitInfo(object: any): object is GithubFileCommitInfo {
+	return 'download_url' in object;
 }
 
 const octokit = new Octokit({
@@ -51,7 +77,7 @@ export const getTopLevelDirectoriesFromCommit = async (owner: string, repo: stri
 	return directories
 }
 
-export const getCommitInfoFromPath = async (owner: string, repo: string, path: string, ref?: string) => {
+export const getCommitInfoFromPath = async (owner: string, repo: string, path: string, ref?: string): Promise<GithubFileCommitInfo | GithubBlobContent> => {
 	const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
 		owner: owner,
 		repo: repo,
@@ -62,7 +88,27 @@ export const getCommitInfoFromPath = async (owner: string, repo: string, path: s
 		}
 	})
 
-	return data
+	let commit_info
+
+	if (!Array.isArray(data)) {
+		if (data.type !== 'file') {
+			throw error(500, 'Path is not a valid file.')
+		}
+
+		data._links
+
+		commit_info = data
+	} else {
+		const commit_info_item = data.shift()
+
+		if (!commit_info_item) {
+			throw error(500, 'Commit info from Github path is empty.')
+		}
+
+		commit_info = await getFileContentFromBlob(owner, repo, commit_info_item.sha)
+	}
+
+	return commit_info
 }
 
 export const getFilesFromCommit = async (owner: string, repo: string, commitSha: string): Promise<GithubTreePath[]> => {
@@ -92,4 +138,35 @@ export const getFileContentFromBlob = async (owner: string, repo: string, fileSh
 	})
 
 	return data
+}
+
+export const getGithubDetailsFromMedata = (metadata: Metadata) => {
+	const github_owner = metadata['github_owner']
+	const github_repo = metadata['github_repo']
+
+	if (typeof github_owner !== 'string') {
+		throw error(500, 'Tag "github_owner" in metadata is not a string.')
+	}
+
+	if (typeof github_repo !== 'string') {
+		throw error(500, 'Tag "github_repo" in metadata is not a string.')
+	}
+
+	return {
+		github_owner,
+		github_repo
+	}
+}
+
+export const decodeContentFromCommitInfo = (commit_info: GithubFileCommitInfo | GithubBlobContent) => {
+  if (commit_info.content === undefined) {
+    throw error(500, "Content from commit is empty.")
+  }
+
+  if (commit_info.encoding !== 'base64') {
+    throw error(500, 'Expected content encoding to be base64.')
+  }
+
+  const decoded = atob(commit_info.content);
+	return decoded
 }

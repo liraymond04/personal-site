@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { parse } from 'yaml'
 import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
-import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, getCommitInfoFromPath } from './github';
+import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, getCommitInfoFromPath, decodeContentFromCommitInfo } from './github';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
 	const pass: T[] = [], fail: T[] = [];
@@ -127,23 +127,7 @@ const loadAssetTreeFromGitHub = async (root: Item, github_owner: string, github_
 	try {
 		const commit_info = await getCommitInfoFromPath(github_owner, github_repo, 'files.yaml', commit_sha)
 
-		if (Array.isArray(commit_info)) {
-			throw Error('Path is not a valid file.')
-		}
-
-		if (commit_info.type !== 'file') {
-			throw Error('Path is not a valid file.')
-		}
-
-		if (commit_info.content === undefined) {
-			throw new Error('File content is empty.')
-		}
-
-		if (commit_info.encoding !== 'base64') {
-			throw new Error('Expected content encoding to be base64.')
-		}
-
-		const yaml_string = atob(commit_info.content);
+		const yaml_string = decodeContentFromCommitInfo(commit_info)
 		const parsed = parse(yaml_string)
 
 		interface Directory {
@@ -222,7 +206,7 @@ const loadAssetTreeFromGitHub = async (root: Item, github_owner: string, github_
 						}
 					}
 				}
-				
+
 				cur_root.children?.push(new_dir)
 			}
 		}
