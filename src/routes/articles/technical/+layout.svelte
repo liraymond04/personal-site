@@ -13,7 +13,7 @@
 		<div class="sm:hidden w-full">
 			<Sidebar root_dir="" root_item={data.props.root} />
 		</div>
-		<div class="mx-6 my-2">
+		<div class="mx-6 my-2 max-w-4xl">
 			<slot />
 		</div>
 	</main>
