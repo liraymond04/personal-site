@@ -70,6 +70,24 @@ const run: PageServerLoad = async ({ params, parent }) => {
 
   const commit = await getLatestCommitSha(github_owner, github_repo)
   let repo_path = params_path.replace(result.path, '')
+
+  if (repo_path.endsWith('.jpg')) {
+    console.log(repo_path)
+    const commit_info_res = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit)
+
+    if (Array.isArray(commit_info_res)) {
+      throw error(500, 'Path is not a valid file.')
+    }
+
+    if (commit_info_res.type !== 'file') {
+      throw error(500, 'Path is not a valid file.')
+    }
+
+    return {
+      img_data: commit_info_res.content
+    }
+  }
+
   if (!data.props.items.find(item => item.path === params_path)) {
     repo_path += '/index.md'
   }
@@ -108,6 +126,18 @@ const run: PageServerLoad = async ({ params, parent }) => {
   if (start_decoded_metadata === 0) {
     const end_metadata = decoded.indexOf('---', 1)
     decoded = decoded.substring(end_metadata + 3)
+  }
+
+  for (const image_path of data.props.image_paths) {
+    const usage_path = image_path.replace(`${params_path}/`, '')
+    const repo_path = image_path.replace(result.path, '')
+    const commit_info = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit)
+
+    if (Array.isArray(commit_info)) {
+      continue
+    }
+
+    decoded = decoded.replaceAll(`(${usage_path})`, `(${commit_info.download_url})`)
   }
 
   return {

@@ -16,6 +16,7 @@
 	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
 
 	import EmojiConverter from 'emoji-js';
+	import ImageRenderer from '$lib/renderers/image-renderer.svelte';
 
 	const emoji = new EmojiConverter();
 	emoji.replace_mode = 'unified';
@@ -40,6 +41,7 @@
 		tablerow: TablerowRenderer,
 		code: CodeRenderer,
 		codespan: CodespanRenderer,
-		blockquote: BlockquoteRenderer
+		blockquote: BlockquoteRenderer,
+		image: ImageRenderer
 	}}
 />

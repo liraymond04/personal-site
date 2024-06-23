@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { parse } from 'yaml'
 import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
-import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, type GithubTreePath, getCommitInfoFromPath } from './github';
+import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, getCommitInfoFromPath } from './github';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
 	const pass: T[] = [], fail: T[] = [];
@@ -12,6 +12,7 @@ const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boole
 
 export const loadAssetTree = async (dir: string, root: Item, files: Record<string, () => Promise<string>>) => {
 	let items: SearchItem[] = []
+	let image_paths: string[] = []
 
 	// special metadata for search and filtering
 	const tags: Set<string> = new Set()
@@ -63,9 +64,9 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 
 					if (typeof github_owner === 'string' && typeof github_repo === 'string') {
 						const commit = await getLatestCommitSha(github_owner, github_repo)
-						const markdown_files = await getFilesFromCommit(github_owner, github_repo, commit)
+						// const markdown_files = await getFilesFromCommit(github_owner, github_repo, commit)
 
-						const data = await loadAssetTreeFromGitHub(cur_root, markdown_files, github_owner, github_repo, commit)
+						const data = await loadAssetTreeFromGitHub(cur_root, github_owner, github_repo, commit)
 						const new_root = data.props.root
 						cur_root = new_root
 						cur_root.github_remote = {
@@ -75,6 +76,7 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 							page_format: github_page_format
 						}
 						items = [...items, ...data.props.items]
+						image_paths = [...image_paths, ...data.props.image_paths]
 					}
 
 					continue;
@@ -112,13 +114,15 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 			root,
 			items,
 			tags,
-			keywords
+			keywords,
+			image_paths
 		}
 	};
 }
 
-const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], github_owner: string, github_repo: string, commit_sha: string) => {
+const loadAssetTreeFromGitHub = async (root: Item, github_owner: string, github_repo: string, commit_sha: string) => {
 	const items: SearchItem[] = []
+	const image_paths: string[] = []
 
 	try {
 		const commit_info = await getCommitInfoFromPath(github_owner, github_repo, 'files.yaml', commit_sha)
@@ -150,6 +154,7 @@ const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], gith
 				page?: boolean
 				tags?: string[]
 				keywords?: string[]
+				type?: string
 			}[]
 		}
 
@@ -173,6 +178,13 @@ const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], gith
 
 				if (dir.files) {
 					const file = dir.files.find(item => item.name === 'index.md')
+					let check_md = false
+
+					const image_files = dir.files.filter(item => item.type === 'image')
+					for (const file of image_files) {
+						image_paths.push(`${path}/${file.name}`)
+					}
+
 					if (file) {
 						if (!file.page) {
 							const new_file = {
@@ -186,15 +198,31 @@ const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], gith
 							}
 							new_dir.children?.unshift(new_file)
 							path += '/index'
+						} else {
+							check_md = true
 						}
 						items.push({
 							path: path,
 							tags: file.tags,
 							keywords: file.keywords
 						})
+					} else {
+						check_md = true
+					}
+
+					if (check_md) {
+						const markdown_files = dir.files.filter(item => item.name !== 'index.md' && item.name.endsWith('.md'))
+
+						for (const file of markdown_files) {
+							items.push({
+								path: `${path}/${file.name}`,
+								tags: file.tags,
+								keywords: file.keywords
+							})
+						}
 					}
 				}
-
+				
 				cur_root.children?.push(new_dir)
 			}
 		}
@@ -208,7 +236,8 @@ const loadAssetTreeFromGitHub = async (root: Item, paths: GithubTreePath[], gith
 	return {
 		props: {
 			root,
-			items
+			items,
+			image_paths
 		}
 	};
 }
