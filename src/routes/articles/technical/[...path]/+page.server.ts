@@ -8,7 +8,9 @@ const run: PageServerLoad = async ({ params, parent }) => {
   const files = import.meta.glob(`/static/articles/technical/**/*.md`, { as: 'raw' })
 
   let params_path = params.path
-  if (params_path.endsWith('/index.md')) {
+  if (params_path.endsWith('/index')) {
+    params_path = params_path.replace('/index', '')
+  } else if (params_path.endsWith('/index.md')) {
     params_path = params_path.replace('/index.md', '')
   }
 
@@ -179,7 +181,9 @@ const run: PageServerLoad = async ({ params, parent }) => {
 
 export const load: PageServerLoad = async (props) => {
   let params_path = props.params.path
-  if (params_path.endsWith('/index.md')) {
+  if (params_path.endsWith('/index')) {
+    params_path = params_path.replace('/index', '')
+  } else if (params_path.endsWith('/index.md')) {
     params_path = params_path.replace('/index.md', '')
   }
 
