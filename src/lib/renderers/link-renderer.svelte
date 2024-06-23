@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	export let href = '';
-	export let title: string | undefined = undefined;
+	let href = $$props.href
+	let title = $$props.title
 
 	function isRelativeUrl(url: string) {
 		// A URL is considered relative if it does not start with a scheme like 'http://' or 'https://'
@@ -33,6 +33,3 @@
 >
 	<slot />
 </a>
-
-<style>
-</style>

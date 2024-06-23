@@ -1,22 +1,58 @@
 <script lang="ts">
-	import SvelteMarkdown from 'svelte-markdown';
-
-	import HeadingRenderer from '$lib/renderers/heading-renderer.svelte';
-	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
-	import LinkRenderer from '$lib/renderers/link-renderer.svelte';
-	import ListRenderer from '$lib/renderers/list-renderer.svelte';
-	import ListitemRenderer from '$lib/renderers/listitem-renderer.svelte';
-	import TableRenderer from '$lib/renderers/table-renderer.svelte';
-	import TablebodyRenderer from '$lib/renderers/tablebody-renderer.svelte';
-	import TablecellRenderer from '$lib/renderers/tablecell-renderer.svelte';
-	import TableheadRenderer from '$lib/renderers/tablehead-renderer.svelte';
-	import TablerowRenderer from '$lib/renderers/tablerow-renderer.svelte';
-	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
-	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
-	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
+	import Markdown from 'svelte-exmarkdown';
+	import type { Plugin } from 'svelte-exmarkdown';
 
 	import EmojiConverter from 'emoji-js';
-	import ImageRenderer from '$lib/renderers/image-renderer.svelte';
+
+	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
+	import rehypeKatex from 'rehype-katex';
+	import remarkMath from 'remark-math';
+	import rehypeHighlight from 'rehype-highlight';
+
+	import * as Headings from '$lib/renderers/headings';
+	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
+	import KatexRenderer from '$lib/renderers/katex-renderer.svelte';
+	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
+	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
+	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
+	import TableRenderer from '$lib/renderers/table-renderer.svelte';
+	import LinkRenderer from '$lib/renderers/link-renderer.svelte';
+	import ThRenderer from '$lib/renderers/th-renderer.svelte';
+	import TdRenderer from '$lib/renderers/td-renderer.svelte';
+	import OlRenderer from '$lib/renderers/ol-renderer.svelte';
+	import UlRenderer from '$lib/renderers/ul-renderer.svelte';
+	import LiRenderer from '$lib/renderers/li-renderer.svelte';
+
+	import 'katex/dist/katex.min.css';
+	import 'highlight.js/styles/atom-one-dark.css';
+
+	const plugins: Plugin[] = [
+		gfmPlugin(),
+		{ rehypePlugin: [rehypeHighlight] },
+		{ remarkPlugin: [remarkMath], rehypePlugin: [rehypeKatex] },
+		{
+			renderer: {
+				h1: Headings.H1,
+				h2: Headings.H2,
+				h3: Headings.H3,
+				h4: Headings.H4,
+				h5: Headings.H5,
+				h6: Headings.H6,
+				p: ParagraphRenderer,
+				table: TableRenderer,
+				th: ThRenderer,
+				td: TdRenderer,
+				ol: OlRenderer,
+				ul: UlRenderer,
+				li: LiRenderer,
+				a: LinkRenderer,
+				blockquote: BlockquoteRenderer,
+				pre: CodeRenderer,
+				code: CodespanRenderer,
+				katex: KatexRenderer
+			}
+		}
+	];
 
 	const emoji = new EmojiConverter();
 	emoji.replace_mode = 'unified';
@@ -26,22 +62,4 @@
 	$: parsed = emoji.replace_colons(source);
 </script>
 
-<SvelteMarkdown
-	source={parsed}
-	renderers={{
-		heading: HeadingRenderer,
-		paragraph: ParagraphRenderer,
-		link: LinkRenderer,
-		list: ListRenderer,
-		listitem: ListitemRenderer,
-		table: TableRenderer,
-		tablebody: TablebodyRenderer,
-		tablecell: TablecellRenderer,
-		tablehead: TableheadRenderer,
-		tablerow: TablerowRenderer,
-		code: CodeRenderer,
-		codespan: CodespanRenderer,
-		blockquote: BlockquoteRenderer,
-		image: ImageRenderer
-	}}
-/>
+<Markdown md={parsed} {plugins} />

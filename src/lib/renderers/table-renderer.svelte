@@ -1,4 +1,6 @@
-<table><slot /></table>
+<table>
+	<slot />
+</table>
 
 <style>
 	table {

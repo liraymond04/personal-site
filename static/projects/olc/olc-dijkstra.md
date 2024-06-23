@@ -30,7 +30,7 @@ export let data;
 
 #### test
 
-test body
+test body `another`
 
 ##### test
 
@@ -82,4 +82,12 @@ int main() {
 
 | And this is | A table |
 |-------------|---------|
-| With two    | columns |`
+| With two    | columns |
+
+1. my
+2. ordered
+    1. another
+    2. ordered
+3. list
+
+$$\dfrac{n!}{k!(n-k)!} = \binom{n}{k}$$
