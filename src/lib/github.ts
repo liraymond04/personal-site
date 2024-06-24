@@ -99,7 +99,7 @@ export const getCommitInfoFromPath = async (owner: string, repo: string, path: s
 
 		commit_info = data
 	} else {
-		const commit_info_item = data.shift()
+		const commit_info_item = data.find(item => item.name.endsWith('.md'))
 
 		if (!commit_info_item) {
 			throw error(500, 'Commit info from Github path is empty.')
