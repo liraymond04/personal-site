@@ -9,6 +9,8 @@
 		return !/^(?:[a-z]+:)?\/\//i.test(url);
 	}
 
+	const normalizePath = (path: string) => path.replace(/[\\/]+/g, '/');
+
 	if (isRelativeUrl(href) && href.endsWith('/index.md')) {
 		href = href.replace('/index.md', '');
 	}
@@ -19,8 +21,6 @@
 
 	$: dir = '';
 
-	$: href_adj = href.startsWith('./') ? href.slice(2) : href;
-
 	$: {
 		const { url } = $page;
 		dir = url.pathname;
@@ -28,7 +28,7 @@
 </script>
 
 <a
-	href={!isRelativeUrl(href) ? href : `${dir}/${href_adj}`}
+	href={!isRelativeUrl(href) ? href : normalizePath(`${dir}/${href}`)}
 	{title}
 	class="link-base visited:link-visit link-hover"
 	target={!isRelativeUrl(href) ? '_blank' : ''}
