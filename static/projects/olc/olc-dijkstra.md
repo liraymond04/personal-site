@@ -5,6 +5,7 @@ tags: programming, data structures & algorithms, OLC
 keywords: C++, graph theory, shortest path
 date: 2023-08-13
 watched: 2021-07-25
+description: Example blog post with markdown styling tests.
 ---
 
 # olc-dijkstra

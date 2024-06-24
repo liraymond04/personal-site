@@ -25,7 +25,12 @@
 	$: items = handleSort(data.props.items, additional);
 </script>
 
-<h1>Projects</h1>
+<svelte:head>
+	<title>Projects - liraymond04</title>
+	<meta name="description" content="Explore Raymond Li's projects as a Computer Science and Math major, showcasing skills in software development, algorithms, and problem-solving.">
+</svelte:head>
+
+<h1>Projects (under construction)</h1>
 
 <SearchComponent class="mx-4 mt-4" bind:additional bind:data {keys} />
 
@@ -36,4 +41,3 @@
 		<ItemCard dir={`/${data.props.root.name}`} item={item}/>
 	{/each}
 </div>
-
