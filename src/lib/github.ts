@@ -173,8 +173,6 @@ export const decodeContentFromCommitInfo = (commit_info: GithubFileCommitInfo | 
 		throw error(500, 'Expected content encoding to be base64.')
 	}
 
-	console.log(commit_info.content)
-
 	const decoded = b64DecodeUnicode(commit_info.content);
 	return decoded
 }
