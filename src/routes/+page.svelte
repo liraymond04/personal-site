@@ -4,7 +4,7 @@
 
 <svelte:head>
 	<title>liraymond04</title>
-	<meta name="description" content="Welcome to Raymond Li's personal site. Discover my latest projects, professional background, blog posts, and insights. Explore my portfolio, connect with me, and learn more about my passions and expertise in CS & Math.">
+	<meta name="description" content="Welcome to Raymond Li's personal site, a Computer Science and Mathematics major at the University of British Columbia (UBC). Discover my latest projects, professional background, blog posts, and insights. Explore my portfolio, connect with me, and learn more about my passions and expertise.">
 </svelte:head>
 
 <div class="flex flex-col space-y-8 max-w-2xl mx-auto py-16 px-4">

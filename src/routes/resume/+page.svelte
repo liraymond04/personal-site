@@ -1,3 +1,8 @@
+<svelte:head>
+	<title>Resume | liraymond04</title>
+	<meta name="description" content="Review Raymond Li's resume, highlighting academic achievements in Computer Science and Mathematics at the University of British Columbia (UBC), technical skills, relevant projects, internships, and professional experiences. Discover my qualifications and expertise in software development, data analysis, and algorithm design.">
+</svelte:head>
+
 <div class="mt-6 pb-12 grid h-[calc(100vh-120px)] place-items-center">
 	<div class="w-[80%] h-full">
 		<object

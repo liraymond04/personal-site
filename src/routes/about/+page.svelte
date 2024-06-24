@@ -1,3 +1,8 @@
+<svelte:head>
+	<title>About | liraymond04</title>
+	<meta name="description" content="Learn more about Raymond Li, a Computer Science and Mathematics major at the University of British Columbia (UBC) passionate about technology and problem-solving. Discover my professional background, academic achievements, skills, and interests.">
+</svelte:head>
+
 <script>
 	import Link from '$lib/ui/shared/link.svelte';
 </script>

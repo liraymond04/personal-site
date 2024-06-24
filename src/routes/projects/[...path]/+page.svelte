@@ -1,27 +1,26 @@
 <script lang="ts">
 	import Markdown from '$lib/ui/markdown/markdown.svelte';
-	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	export let data;
 
+	$: title = $$props.data.path.replace(/^.*[\\/]/, '')
+
 	let source = writable(null);
-	let title = writable('Projects');
 	let description = writable(
-		"Explore Raymond Li's projects as a Computer Science and Math major, showcasing skills in software development, algorithms, and problem-solving."
+		"Explore Raymond Li's projects as a Computer Science and Mathematics major at the University of British Columbia (UBC), showcasing skills in software development, algorithms, and problem-solving."
 	);
 
-	onMount(async () => {
+	$: (async () => {
 		const result = await data.streaming.data;
 		source.set(result?.props.markdownContent);
 
-		title.set(result?.props?.metadata?.title || $title);
 		description.set(result?.props?.metadata?.description || $description);
-	});
+	})();
 </script>
 
 <svelte:head>
-	<title>{$title} - liraymond04</title>
+	<title>{title} | liraymond04</title>
 	<meta name="description" content={`${$description}`} />
 </svelte:head>
 

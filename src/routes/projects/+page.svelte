@@ -26,8 +26,8 @@
 </script>
 
 <svelte:head>
-	<title>Projects - liraymond04</title>
-	<meta name="description" content="Explore Raymond Li's projects as a Computer Science and Math major, showcasing skills in software development, algorithms, and problem-solving.">
+	<title>Projects | liraymond04</title>
+	<meta name="description" content="Explore Raymond Li's projects as a Computer Science and Mathematics major at the University of British Columbia (UBC), showcasing skills in software development, algorithms, and problem-solving.">
 </svelte:head>
 
 <h1>Projects (under construction)</h1>
