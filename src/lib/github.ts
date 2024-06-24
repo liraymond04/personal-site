@@ -158,15 +158,23 @@ export const getGithubDetailsFromMedata = (metadata: Metadata) => {
 	}
 }
 
+function b64DecodeUnicode(str: string) {
+	return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+	}).join(''))
+}
+
 export const decodeContentFromCommitInfo = (commit_info: GithubFileCommitInfo | GithubBlobContent) => {
-  if (commit_info.content === undefined) {
-    throw error(500, "Content from commit is empty.")
-  }
+	if (commit_info.content === undefined) {
+		throw error(500, "Content from commit is empty.")
+	}
 
-  if (commit_info.encoding !== 'base64') {
-    throw error(500, 'Expected content encoding to be base64.')
-  }
+	if (commit_info.encoding !== 'base64') {
+		throw error(500, 'Expected content encoding to be base64.')
+	}
 
-  const decoded = atob(commit_info.content);
+	console.log(commit_info.content)
+
+	const decoded = b64DecodeUnicode(commit_info.content);
 	return decoded
 }
