@@ -50,17 +50,17 @@ export const loadRemoteIndex = async (files: Record<string, () => Promise<string
 export const loadRemoteImagePaths = async (markdownContent: string, github_owner: string, github_repo: string, commit_sha: string, params_path: string, result_path: string, image_paths: string[]) => {
 	let decoded = markdownContent
 
-  for (const image_path of image_paths) {
-    const usage_path = image_path.replace(`${params_path}/`, '')
-    const repo_path = image_path.replace(result_path, '')
-    const commit_info = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit_sha)
+	for (const image_path of image_paths) {
+		const usage_path = image_path.replace(`${params_path}/`, '')
+		const repo_path = image_path.replace(result_path, '')
+		const commit_info = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit_sha)
 
-    if (!IsGithubFileCommitInfo(commit_info)) {
-      continue
-    }
+		if (!IsGithubFileCommitInfo(commit_info)) {
+			continue
+		}
 
-    decoded = decoded.replaceAll(`(${usage_path})`, `(${commit_info.download_url})`)
-  }
+		decoded = decoded.replaceAll(`(${usage_path})`, `(${commit_info.download_url})`)
+	}
 
 	return decoded
 }

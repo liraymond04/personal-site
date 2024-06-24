@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	let href = $$props.href
-	let title = $$props.title
+	let href = $$props.href;
+	let title = $$props.title;
 
 	function isRelativeUrl(url: string) {
 		// A URL is considered relative if it does not start with a scheme like 'http://' or 'https://'
@@ -17,7 +17,9 @@
 		href = '../' + href.replace('.md', '');
 	}
 
-	$: dir = ''
+	$: dir = '';
+
+	$: href_adj = href.startsWith('./') ? href.slice(2) : href;
 
 	$: {
 		const { url } = $page;
@@ -26,7 +28,7 @@
 </script>
 
 <a
-	href={!isRelativeUrl(href) ? href : `${dir}/${href}`}
+	href={!isRelativeUrl(href) ? href : `${dir}/${href_adj}`}
 	{title}
 	class="link-base visited:link-visit link-hover"
 	target={!isRelativeUrl(href) ? '_blank' : ''}
