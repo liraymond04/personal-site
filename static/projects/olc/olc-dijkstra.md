@@ -91,4 +91,8 @@ int main() {
     2. ordered
 3. list
 
-$$\dfrac{n!}{k!(n-k)!} = \binom{n}{k}$$
+$$
+\dfrac{n!}{k!(n-k)!} = \binom{n}{k}
+$$
+
+inline $2=2$
