@@ -11,7 +11,6 @@
 
 	import * as Headings from '$lib/renderers/headings';
 	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
-	import KatexRenderer from '$lib/renderers/katex-renderer.svelte';
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
 	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
 	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
@@ -48,8 +47,7 @@
 				a: LinkRenderer,
 				blockquote: BlockquoteRenderer,
 				pre: CodeRenderer,
-				code: CodespanRenderer,
-				span: KatexRenderer
+				code: CodespanRenderer
 			}
 		}
 	];
