@@ -14,6 +14,7 @@
 </script>
 
 <ol
+	class="my-4"
 	bind:this={element}
 	start={$$props.start}
 	style:list-style-type={depth % 3 === 0
