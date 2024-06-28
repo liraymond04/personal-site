@@ -2,12 +2,13 @@
 	import Markdown from 'svelte-exmarkdown';
 	import type { Plugin } from 'svelte-exmarkdown';
 
-	import EmojiConverter from 'emoji-js';
-
 	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 	import rehypeKatex from 'rehype-katex';
 	import remarkMath from 'remark-math';
+	import remarkEmoji from 'remark-emoji'
 	import rehypeHighlight from 'rehype-highlight';
+	import rehypeRaw from 'rehype-raw';
+	import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
 	import * as Headings from '$lib/renderers/headings';
 	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
@@ -25,10 +26,24 @@
 	import 'katex/dist/katex.min.css';
 	import 'highlight.js/styles/atom-one-dark.css';
 
+	const tagNames = defaultSchema.tagNames ?? [];
+
+	const mySchema = {
+		...defaultSchema,
+		tagNames: [...tagNames, 'style'],
+		attributes: {
+			...defaultSchema.attributes,
+			style: ['type']
+		}
+	};
+
 	const plugins: Plugin[] = [
 		gfmPlugin(),
+		{ rehypePlugin: [rehypeRaw] },
+		{ rehypePlugin: [rehypeSanitize, { ...mySchema }] },
 		{ rehypePlugin: [rehypeHighlight] },
 		{ remarkPlugin: [remarkMath], rehypePlugin: [rehypeKatex] },
+		{ remarkPlugin: [remarkEmoji] },
 		{
 			renderer: {
 				h1: Headings.H1,
@@ -52,12 +67,7 @@
 		}
 	];
 
-	const emoji = new EmojiConverter();
-	emoji.replace_mode = 'unified';
-
 	export let source;
-
-	$: parsed = emoji.replace_colons(source);
 </script>
 
-<Markdown md={parsed} {plugins} />
+<Markdown md={source} {plugins} />
