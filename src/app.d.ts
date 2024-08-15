@@ -7,6 +7,10 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 	}
+	interface Window {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		Module: any,
+	}
 }
 
 export {};
