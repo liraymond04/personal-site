@@ -30,6 +30,10 @@
 	}
 </script>
 
+<svelte:head>
+	<meta name="description" content="Demo page for AWA5.0 Raylib 3D Emscripten WASM build">
+</svelte:head>
+
 <body>
 	<canvas class="canvas" bind:this={canvas} />
 </body>
