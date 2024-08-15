@@ -16,7 +16,7 @@
 				scriptLoaded = true;
 				setTimeout(() => {
 					updateCanvasWidth();
-				}, 500);
+				}, 1000);
 			};
 			document.head.appendChild(script);
 			window.addEventListener('resize', updateCanvasWidth);
