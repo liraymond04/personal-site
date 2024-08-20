@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Markdown from '$lib/ui/markdown/markdown.svelte';
 	import { writable } from 'svelte/store';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -14,7 +15,7 @@
 	$: (async () => {
 		const result = await data.streaming.data;
 		if (result?.props?.is_file) {
-			window.open(result?.props?.download_url, '');
+			goto(result?.props?.download_url);
 		}
 
 		source.set(result?.props.markdownContent);
