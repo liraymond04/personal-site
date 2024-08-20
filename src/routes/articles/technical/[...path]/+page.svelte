@@ -4,7 +4,7 @@
 
 	export let data;
 
-	$: title = $$props.data.path.replace(/^.*[\\/]/, '')
+	$: title = $$props.data.path.replace(/^.*[\\/]/, '');
 
 	let source = writable(null);
 	let description = writable(
@@ -13,6 +13,10 @@
 
 	$: (async () => {
 		const result = await data.streaming.data;
+		if (result?.props?.is_file) {
+			window.open(result?.props?.download_url, '');
+		}
+
 		source.set(result?.props.markdownContent);
 
 		description.set(result?.props?.metadata?.description || $description);
@@ -29,5 +33,9 @@
 		<span class="loading loading-spinner loading-lg" />
 	</div>
 {:then source}
-	<Markdown source={source?.props.markdownContent} />
+	{#if source?.props.is_file}
+		<!-- Custom rendering for file download page -->
+	{:else}
+		<Markdown source={source?.props.markdownContent} />
+	{/if}
 {/await}
