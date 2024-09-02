@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	let canvas: HTMLCanvasElement | undefined;
 	let scriptLoaded = false;
@@ -14,12 +14,35 @@
 			script.src = '/wasm/awa5_rs-wasm-raylib.js';
 			script.onload = () => {
 				scriptLoaded = true;
-				setTimeout(() => {
-					updateCanvasWidth();
-				}, 1000);
 			};
 			document.head.appendChild(script);
 			window.addEventListener('resize', updateCanvasWidth);
+		}
+
+		// We know the canvas/window is initialized here
+		function onTitleChange() {
+			updateCanvasWidth();
+		}
+
+		const titleElement = document.querySelector('title');
+
+		if (titleElement) {
+			const observer = new MutationObserver(() => {
+				onTitleChange();
+			});
+
+			observer.observe(titleElement, {
+				childList: true,
+				subtree: true,
+				characterData: true
+			});
+
+			onDestroy(() => {
+				observer.disconnect();
+				window.removeEventListener('resize', updateCanvasWidth);
+			});
+		} else {
+			console.error('Title element not found');
 		}
 	});
 
@@ -31,7 +54,8 @@
 </script>
 
 <svelte:head>
-	<meta name="description" content="Demo page for AWA5.0 Raylib 3D Emscripten WASM build">
+	<title>AWA5.0 Raylib 3D | liraymond04</title>
+	<meta name="description" content="Demo page for AWA5.0 Raylib 3D Emscripten WASM build" />
 </svelte:head>
 
 <body>
@@ -40,7 +64,6 @@
 
 <style>
 	.canvas {
-		/* width: 100%; */
 		padding-right: 0;
 		margin-left: auto;
 		margin-right: auto;

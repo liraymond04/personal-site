@@ -3,15 +3,21 @@
 	import Footer from '$lib/ui/footer/footer.svelte';
 	import '../app.css';
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 
-	if (browser) {
-		window.dataLayer = window.dataLayer || [];
-		window.gtag = function gtag() {
-			window.dataLayer.push(arguments);
-		};
-		window.gtag('js', new Date());
+	$: {
+		if (browser) {
+			window.dataLayer = window.dataLayer || [];
+			window.gtag = function gtag() {
+				window.dataLayer.push(arguments);
+			};
+			window.gtag('js', new Date());
 
-		window.gtag('config', 'G-CVCZVRFDHJ');
+			window.gtag('config', 'G-CVCZVRFDHJ', {
+				page_title: document.title,
+				page_path: $page.url.pathname
+			});
+		}
 	}
 </script>
 
