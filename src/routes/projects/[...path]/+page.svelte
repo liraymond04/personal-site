@@ -29,5 +29,5 @@
 		<span class="loading loading-spinner loading-lg" />
 	</div>
 {:then source}
-	<Markdown source={source?.props.markdownContent} />
+	<Markdown source={source?.props.markdownContent} style={source?.props.metadata?.style} />
 {/await}
