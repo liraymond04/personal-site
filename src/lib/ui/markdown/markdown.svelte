@@ -29,7 +29,7 @@
 	import 'katex/dist/katex.min.css';
 	import 'highlight.js/styles/atom-one-dark.css';
 
-	export let style = '';
+	export let layout = '';
 
 	const plugins: Plugin[] = [
 		gfmPlugin(),
@@ -45,8 +45,8 @@
 				h4: Headings.H4,
 				h5: Headings.H5,
 				h6: Headings.H6,
-				p: style == 'webnovel' ? WNParagraphRenderer : ParagraphRenderer,
-				center: style == 'webnovel' ? WNCenterRenderer : CenterRenderer,
+				p: layout == 'webnovel' ? WNParagraphRenderer : ParagraphRenderer,
+				center: layout == 'webnovel' ? WNCenterRenderer : CenterRenderer,
 				table: TableRenderer,
 				th: ThRenderer,
 				td: TdRenderer,

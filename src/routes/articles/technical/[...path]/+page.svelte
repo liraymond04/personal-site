@@ -37,6 +37,6 @@
 	{#if source?.props.is_file}
 		<!-- Custom rendering for file download page -->
 	{:else}
-		<Markdown source={source?.props.markdownContent} style={source?.props.metadata?.style} />
+		<Markdown source={source?.props.markdownContent} layout={source?.props.metadata?.layout} />
 	{/if}
 {/await}
