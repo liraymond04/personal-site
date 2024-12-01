@@ -3,6 +3,8 @@ import { parseMetadata } from '$lib/metadata';
 import { getLatestCommitSha, getCommitInfoFromPath, getGithubDetailsFromMedata, decodeContentFromCommitInfo, IsGithubFileCommitInfo } from '$lib/github';
 import { loadRemoteImagePaths, loadRemoteIndex } from '$lib/remote';
 
+export const trailingSlash = 'never';
+
 const dir = '/static/articles/technical'
 const files = import.meta.glob(`/static/articles/technical/**/*.md`, { as: 'raw' })
 
@@ -74,6 +76,9 @@ const run: PageServerLoad = async ({ params, parent }) => {
 
   if (isFilePath(params_path)) {
     const { github_owner, github_repo, title } = metadata;
+    if (!github_owner || !github_repo || !title) {
+      return;
+    }
     const full_path = params_path.replace(`${title}/`, '')
     const file = await getCommitInfoFromPath(github_owner.toString(), github_repo.toString(), full_path);
 
