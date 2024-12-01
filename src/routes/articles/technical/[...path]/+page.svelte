@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Markdown from '$lib/ui/markdown/markdown.svelte';
+	import Giscus from '@giscus/svelte';
 	import { writable } from 'svelte/store';
 	import { goto } from '$app/navigation';
 
@@ -38,5 +39,22 @@
 		<!-- Custom rendering for file download page -->
 	{:else}
 		<Markdown source={source?.props.markdownContent} layout={source?.props.metadata?.layout} />
+		<div class="py-8">
+			<Giscus
+				id="comments"
+				repo="liraymond04/personal-site-comments"
+				repoId="R_kgDONXNuZA"
+				category="Announcements"
+				categoryId="DIC_kwDONXNuZM4CkxfG"
+				mapping="pathname"
+				term="Welcome to @giscus/svelte component!"
+				strict="1"
+				reactionsEnabled="1"
+				emitMetadata="0"
+				inputPosition="top"
+				theme="transparent_dark"
+				lang="en"
+			/>
+		</div>
 	{/if}
 {/await}
