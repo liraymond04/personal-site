@@ -5,14 +5,14 @@
 	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 	import rehypeKatex from 'rehype-katex';
 	import remarkMath from 'remark-math';
-	import remarkEmoji from 'remark-emoji'
+	import remarkEmoji from 'remark-emoji';
 	import rehypeHighlight from 'rehype-highlight';
 	import rehypeRaw from 'rehype-raw';
-	import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
 	import * as Headings from '$lib/renderers/headings';
 	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
+	import CenterRenderer from '$lib/renderers/center-renderer.svelte';
 	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
 	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
 	import TableRenderer from '$lib/renderers/table-renderer.svelte';
@@ -23,6 +23,9 @@
 	import UlRenderer from '$lib/renderers/ul-renderer.svelte';
 	import LiRenderer from '$lib/renderers/li-renderer.svelte';
 
+	import WNParagraphRenderer from '$lib/renderers/webnovel/paragraph-renderer.svelte';
+	import WNCenterRenderer from '$lib/renderers/webnovel/center-renderer.svelte';
+
 	import 'katex/dist/katex.min.css';
 	import 'highlight.js/styles/atom-one-dark.css';
 
@@ -31,7 +34,6 @@
 	const plugins: Plugin[] = [
 		gfmPlugin(),
 		{ rehypePlugin: [rehypeRaw] },
-		{ rehypePlugin: [rehypeSanitize, { ...mySchema }] },
 		{ rehypePlugin: [rehypeHighlight] },
 		{ remarkPlugin: [remarkMath], rehypePlugin: [rehypeKatex] },
 		{ remarkPlugin: [remarkEmoji] },
