@@ -44,6 +44,8 @@ __test__
 
 [hobbits][2]
 
+Here we go [^1].
+
 [1]: <https://en.wikipedia.org/wiki/Hobbit#Lifestyle> (Hobbit lifestyles)
 [2]: <https://en.wikipedia.org/wiki/Hobbit#Lifestyle>
 
@@ -51,8 +53,8 @@ __test__
 
 
 let's
-**fucking**
-*goooo*
+~~**fucking**~~
+*goooo* :pray:
 
 ***
 
@@ -94,5 +96,7 @@ int main() {
 $$
 \dfrac{n!}{k!(n-k)!} = \binom{n}{k}
 $$
+
+[^1]: This is a footnote
 
 inline $2=2$
