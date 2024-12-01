@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	let href = $$props.href;
-	let title = $$props.title;
+	export let id;
+	export let href;
+	export let title;
 
 	function isRelativeUrl(url: string) {
 		// A URL is considered relative if it does not start with a scheme like 'http://' or 'https://'
@@ -28,6 +29,7 @@
 </script>
 
 <a
+	{id}
 	href={!isRelativeUrl(href) ? href : normalizePath(`${dir}/${href}`)}
 	{title}
 	class="link-base visited:link-visit link-hover"
