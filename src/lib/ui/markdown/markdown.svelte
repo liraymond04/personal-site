@@ -26,16 +26,7 @@
 	import 'katex/dist/katex.min.css';
 	import 'highlight.js/styles/atom-one-dark.css';
 
-	const tagNames = defaultSchema.tagNames ?? [];
-
-	const mySchema = {
-		...defaultSchema,
-		tagNames: [...tagNames, 'style'],
-		attributes: {
-			...defaultSchema.attributes,
-			style: ['type']
-		}
-	};
+	export let layout = '';
 
 	const plugins: Plugin[] = [
 		gfmPlugin(),
@@ -52,7 +43,8 @@
 				h4: Headings.H4,
 				h5: Headings.H5,
 				h6: Headings.H6,
-				p: ParagraphRenderer,
+				p: layout == 'webnovel' ? WNParagraphRenderer : ParagraphRenderer,
+				center: layout == 'webnovel' ? WNCenterRenderer : CenterRenderer,
 				table: TableRenderer,
 				th: ThRenderer,
 				td: TdRenderer,

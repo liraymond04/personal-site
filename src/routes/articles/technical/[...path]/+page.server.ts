@@ -87,7 +87,12 @@ const run: PageServerLoad = async ({ params, parent }) => {
     }
   }
 
-  const { github_owner, github_repo } = getGithubDetailsFromMedata(metadata)
+  let github_owner, github_repo;
+  try {
+    ({ github_owner, github_repo } = getGithubDetailsFromMedata(metadata));
+  } catch (error) {
+    return;
+  }
 
   const commit = await getLatestCommitSha(github_owner, github_repo)
   let repo_path = params_path.replace(result.path, '')

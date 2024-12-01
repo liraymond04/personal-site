@@ -4,7 +4,7 @@
 
 	export let data;
 
-	$: title = $$props.data.path.replace(/^.*[\\/]/, '')
+	$: title = $$props.data.path.replace(/^.*[\\/]/, '');
 
 	let source = writable(null);
 	let description = writable(
@@ -29,5 +29,5 @@
 		<span class="loading loading-spinner loading-lg" />
 	</div>
 {:then source}
-	<Markdown source={source?.props.markdownContent} />
+	<Markdown source={source?.props.markdownContent} layout={source?.props.metadata?.layout} />
 {/await}

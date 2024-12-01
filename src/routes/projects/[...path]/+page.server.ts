@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { parseMetadata } from '$lib/metadata';
+import { getLatestCommitSha, getCommitInfoFromPath, getGithubDetailsFromMedata, decodeContentFromCommitInfo, IsGithubFileCommitInfo } from '$lib/github';
 import { loadRemoteImagePaths, loadRemoteIndex } from '$lib/remote';
-import { decodeContentFromCommitInfo, getCommitInfoFromPath, getGithubDetailsFromMedata, getLatestCommitSha } from '$lib/github';
 
 const dir = '/static/projects'
 const files = import.meta.glob("/static/projects/**/*.md", { as: 'raw' });
@@ -14,6 +14,11 @@ const fixParamsPath = (path: string) => {
     params_path = params_path.replace('/index.md', '')
   }
   return params_path
+}
+
+function isFilePath(path: string): boolean {
+  const pathRegex = /.+\..+/;
+  return pathRegex.test(path);
 }
 
 const run: PageServerLoad = async ({ params, parent }) => {
@@ -67,7 +72,27 @@ const run: PageServerLoad = async ({ params, parent }) => {
   const markdownContent = await files[path]()
   const metadata = parseMetadata(markdownContent)
 
-  const { github_owner, github_repo } = getGithubDetailsFromMedata(metadata)
+  if (isFilePath(params_path)) {
+    const { github_owner, github_repo, title } = metadata;
+    const full_path = params_path.replace(`${title}/`, '')
+    const file = await getCommitInfoFromPath(github_owner.toString(), github_repo.toString(), full_path);
+
+    if (IsGithubFileCommitInfo(file) && file.download_url) {
+      return {
+        props: {
+          is_file: true,
+          download_url: file.download_url,
+        }
+      }
+    }
+  }
+
+  let github_owner, github_repo;
+  try {
+    ({ github_owner, github_repo } = getGithubDetailsFromMedata(metadata));
+  } catch (error) {
+    return;
+  }
 
   const commit = await getLatestCommitSha(github_owner, github_repo)
   let repo_path = params_path.replace(result.path, '')
