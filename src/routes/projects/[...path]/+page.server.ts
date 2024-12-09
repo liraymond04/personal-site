@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { parseMetadata } from '$lib/metadata';
 import { getLatestCommitSha, getCommitInfoFromPath, getGithubDetailsFromMedata, decodeContentFromCommitInfo, IsGithubFileCommitInfo } from '$lib/github';
 import { loadRemoteImagePaths, loadRemoteIndex } from '$lib/remote';
+import { getPost } from '$lib/supabase';
 
 export const trailingSlash = 'never';
 
@@ -54,7 +55,23 @@ const run: PageServerLoad = async ({ params, parent }) => {
       markdownContent = markdownContent.substring(end_metadata + 3)
     }
 
-    if (!metadata['github_owner'] || !metadata['github_repo']) {
+    if (metadata['supabase_page_format'] &&
+      metadata['repo_url'] &&
+      metadata['file_path'] &&
+      !Array.isArray(metadata['repo_url']) &&
+      !Array.isArray(metadata['file_path'])
+    ) {
+      const result = await getPost(metadata['repo_url'], metadata['file_path']);
+      // TODO - load remote image paths
+      return {
+        props: {
+          metadata,
+          markdownContent: result[0]?.content
+        }
+      }
+    }
+
+    if (!metadata['github_page_format'] || !metadata['github_owner'] || !metadata['github_repo']) {
       return {
         props: {
           metadata,
@@ -68,8 +85,12 @@ const run: PageServerLoad = async ({ params, parent }) => {
     return loadRemoteIndex(files, params_path, dir);
   }
 
-  const result = data.props.items.filter(item => params_path.includes(item.path))?.[0]
-  const path = `${dir}/${result.path}/index.md`
+  const result = data.props.items.filter(item => params_path.includes(item?.path))?.[0]
+  const path = `${dir}/${result?.path}/index.md`
+
+  if (!files[path]) {
+    return
+  }
 
   const markdownContent = await files[path]()
   const metadata = parseMetadata(markdownContent)
