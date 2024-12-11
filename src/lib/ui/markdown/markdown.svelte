@@ -13,6 +13,7 @@
 	import CodeRenderer from '$lib/renderers/code-renderer.svelte';
 	import CodespanRenderer from '$lib/renderers/codespan-renderer.svelte';
 	import CenterRenderer from '$lib/renderers/center-renderer.svelte';
+	import BreakRenderer from '$lib/renderers/break-renderer.svelte';
 	import BlockquoteRenderer from '$lib/renderers/blockquote-renderer.svelte';
 	import ParagraphRenderer from '$lib/renderers/paragraph-renderer.svelte';
 	import TableRenderer from '$lib/renderers/table-renderer.svelte';
@@ -47,6 +48,7 @@
 				h6: Headings.H6,
 				p: layout == 'webnovel' ? WNParagraphRenderer : ParagraphRenderer,
 				center: layout == 'webnovel' ? WNCenterRenderer : CenterRenderer,
+				br: BreakRenderer,
 				table: TableRenderer,
 				th: ThRenderer,
 				td: TdRenderer,

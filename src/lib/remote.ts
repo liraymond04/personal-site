@@ -25,6 +25,15 @@ export const loadRemoteIndex = async (files: Record<string, () => Promise<string
 		markdownContent = markdownContent.substring(end_metadata + 3)
 	}
 
+	// TODO - add more remote sources like Supabase
+	//
+	// validate fields like github_owner and github_repo
+	// to choose how to fetch markdown markdownContent
+	//
+	// for sources like Supabase, require env vars
+	// defined to use as authentication for reading
+	// from Supabase instance (passwd or token)
+
 	const { github_owner, github_repo } = getGithubDetailsFromMedata(metadata)
 
 	// Load README as index page if it exists
