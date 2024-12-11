@@ -43,6 +43,7 @@
     "@giscus/svelte": "^3.0.0",
     "@octokit/rest": "^20.1.1",
     "@rodneylab/svelte-social-icons": "^0.0.30",
+    "@supabase/supabase-js": "^2.47.3",
     "@sveltejs/adapter-netlify": "^4.2.1",
     "@types/emoji-js": "^3.5.2",
     "drizzle-orm": "^0.37.0",

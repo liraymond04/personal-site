@@ -6,6 +6,7 @@ export const postsTable = pgTable('posts', {
 	content: text('content').notNull(),
 	tags: text('tags').array(),
 	keywords: text('keywords').array(),
+	mediaFiles: text('media_files').array(),
 	repoUrl: text('repo_url').notNull(),
 	filePath: text('file_path').notNull(),
 	createdAt: timestamp('created_at').notNull().defaultNow(),

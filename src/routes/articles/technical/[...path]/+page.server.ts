@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { parseMetadata } from '$lib/metadata';
 import { getLatestCommitSha, getCommitInfoFromPath, getGithubDetailsFromMedata, decodeContentFromCommitInfo, IsGithubFileCommitInfo } from '$lib/github';
 import { loadRemoteImagePaths, loadRemoteIndex } from '$lib/remote';
-import { getPost } from '$lib/supabase';
+import { getPost, replaceRemoteImagePaths } from '$lib/supabase';
 
 export const trailingSlash = 'never';
 
@@ -62,10 +62,12 @@ const run: PageServerLoad = async ({ params, parent }) => {
       !Array.isArray(metadata['file_path'])
     ) {
       const result = await getPost(metadata['repo_url'], metadata['file_path']);
+      const finalContent = await replaceRemoteImagePaths(result[0]?.content, metadata['repo_url'], metadata['file_path']);
+
       return {
         props: {
           metadata,
-          markdownContent: result[0]?.content
+          markdownContent: finalContent,
         }
       }
     }
