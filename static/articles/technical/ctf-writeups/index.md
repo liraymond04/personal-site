@@ -1,9 +1,8 @@
 ---
 layout: project-post
 title: ctf-writeups
-github_owner: liraymond04
-github_repo: ctf-writeups
-github_page_format: true
+repo_url: liraymond04/ctf-writeups
+supabase_root: true
 ---
 
 # ctf-writeups

@@ -1,0 +1,1 @@
+ALTER TABLE "posts" ALTER COLUMN "media_files" SET DATA TYPE text[];
