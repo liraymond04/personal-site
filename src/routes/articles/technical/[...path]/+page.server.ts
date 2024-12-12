@@ -66,11 +66,16 @@ const run: PageServerLoad = async ({ params }) => {
       }
     }
 
-    if (!metadata['github_page_format'] || !metadata['github_owner'] || !metadata['github_repo']) {
+    if (
+      !(metadata['supabase_root'] === 'true') &&
+      !metadata['github_page_format'] &&
+      !metadata['github_owner'] &&
+      !metadata['github_repo']
+    ) {
       return {
         props: {
           metadata,
-          markdownContent
+          markdownContent,
         }
       }
     }
@@ -115,9 +120,9 @@ const run: PageServerLoad = async ({ params }) => {
   const response = await getPost(repo_url, "README.md");
   if (response.length !== 0) {
     const metadata = {
-        title: response[0].title,
-        media_files: response[0].mediaFiles,
-        layout: response[0].layout,
+      title: response[0].title,
+      media_files: response[0].mediaFiles,
+      layout: response[0].layout,
     }
     const content = response[0].content
     return {

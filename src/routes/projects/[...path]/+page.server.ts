@@ -66,11 +66,16 @@ const run: PageServerLoad = async ({ params }) => {
       }
     }
 
-    if (!metadata['github_page_format'] || !metadata['github_owner'] || !metadata['github_repo']) {
+    if (
+      !(metadata['supabase_root'] === 'true') &&
+      !metadata['github_page_format'] &&
+      !metadata['github_owner'] &&
+      !metadata['github_repo']
+    ) {
       return {
         props: {
           metadata,
-          markdownContent
+          markdownContent,
         }
       }
     }
