@@ -1,8 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { parseMetadata } from '$lib/metadata';
-import { getLatestCommitSha, getCommitInfoFromPath, getGithubDetailsFromMedata, decodeContentFromCommitInfo, IsGithubFileCommitInfo } from '$lib/github';
-import { loadRemoteImagePaths, loadRemoteIndex } from '$lib/remote';
 import { getPost, replaceRemoteImagePaths } from '$lib/supabase';
+import path from 'path';
 
 export const trailingSlash = 'never';
 
@@ -19,16 +18,10 @@ const fixParamsPath = (path: string) => {
   return params_path
 }
 
-function isFilePath(path: string): boolean {
-  const pathRegex = /.+\..+/;
-  return pathRegex.test(path);
-}
-
-const run: PageServerLoad = async ({ params, parent }) => {
+const run: PageServerLoad = async ({ params }) => {
   let params_path = params.path
   params_path = fixParamsPath(params_path)
 
-  const data = await parent();
   const check_path = `${dir}/${params_path}/index.md`
   const second_check_path = `${dir}/${params_path}.md`
 
@@ -82,71 +75,57 @@ const run: PageServerLoad = async ({ params, parent }) => {
     }
   }
 
-  if (check_path in files) {
-    return loadRemoteIndex(files, params_path, dir);
+  const pathArray = params_path.split(path.sep)
+  const repo_name = pathArray[0]
+  const file_path = path.relative(repo_name, params_path);
+  const repo_url = `liraymond04/${repo_name}`
+
+  if (!repo_url) {
+    return;
   }
 
-  const result = data.props.items.filter(item => params_path.includes(item?.path))?.[0]
-  const path = `${dir}/${result?.path}/index.md`
+  const check_paths: string[] = [`${file_path}.md`, `${file_path}/index.md`];
 
-  if (!files[path]) {
-    return
-  }
+  for (const check of check_paths) {
+    const response = await getPost(repo_url, check);
 
-  const markdownContent = await files[path]()
-  const metadata = parseMetadata(markdownContent)
+    if (response.length !== 0) {
+      const metadata = {
+        title: response[0].title,
+        tags: response[0].tags,
+        keywords: response[0].tags,
+        media_files: response[0].mediaFiles,
+        layout: response[0].layout,
+      }
+      const content = response[0].content;
 
-  if (isFilePath(params_path)) {
-    const { github_owner, github_repo, title } = metadata;
-    if (!github_owner || !github_repo || !title) {
-      return;
-    }
-    const full_path = params_path.replace(`${title}/`, '')
-    const file = await getCommitInfoFromPath(github_owner.toString(), github_repo.toString(), full_path);
+      const finalContent = await replaceRemoteImagePaths(content, repo_url, check);
 
-    if (IsGithubFileCommitInfo(file) && file.download_url) {
       return {
         props: {
-          is_file: true,
-          download_url: file.download_url,
+          metadata,
+          markdownContent: finalContent,
         }
       }
     }
   }
 
-  let github_owner, github_repo;
-  try {
-    ({ github_owner, github_repo } = getGithubDetailsFromMedata(metadata));
-  } catch (error) {
-    return;
+  // if nothing, try and find repo root
+  const response = await getPost(repo_url, "README.md");
+  if (response.length !== 0) {
+    const metadata = {
+        title: response[0].title,
+        media_files: response[0].mediaFiles,
+        layout: response[0].layout,
+    }
+    const content = response[0].content
+    return {
+      props: {
+        metadata,
+        markdownContent: content,
+      }
+    }
   }
-
-  const commit = await getLatestCommitSha(github_owner, github_repo)
-  let repo_path = params_path.replace(result.path, '')
-
-  if (!data.props.items.find(item => item.path === params_path)) {
-    repo_path += '/index.md'
-  }
-  const commit_info = await getCommitInfoFromPath(github_owner, github_repo, repo_path, commit)
-
-  let decoded = decodeContentFromCommitInfo(commit_info);
-  const decodedMetadata = parseMetadata(decoded)
-
-  const start_decoded_metadata = decoded.indexOf('---')
-  if (start_decoded_metadata === 0) {
-    const end_metadata = decoded.indexOf('---', 1)
-    decoded = decoded.substring(end_metadata + 3)
-  }
-
-  decoded = await loadRemoteImagePaths(decoded, github_owner, github_repo, commit, params_path, result.path, data.props.image_paths)
-
-  return {
-    props: {
-      metadata: decodedMetadata,
-      markdownContent: decoded,
-    },
-  };
-
 }
 
 export const load: PageServerLoad = async (props) => {

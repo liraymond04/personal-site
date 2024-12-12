@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
-import { parse } from 'yaml'
 import type { Item, SearchItem } from '$lib/ui/sidebar/types'
 import { parseMetadata } from '$lib/metadata';
-import { getLatestCommitSha, getFileContentFromBlob, getFilesFromCommit, getCommitInfoFromPath, decodeContentFromCommitInfo } from './github';
+import { getAllPostsFromRepo } from './supabase';
+import pathLib from 'path';
 
 const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boolean) => {
 	const pass: T[] = [], fail: T[] = [];
@@ -12,7 +12,6 @@ const partition = <T>(array: T[], filter: (e: T, idx: number, arr: T[]) => boole
 
 export const loadAssetTree = async (dir: string, root: Item, files: Record<string, () => Promise<string>>) => {
 	let items: SearchItem[] = []
-	let image_paths: string[] = []
 
 	// special metadata for search and filtering
 	const tags: Set<string> = new Set()
@@ -58,25 +57,16 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 				if (_path === "index.md") {
 					cur_root.children?.unshift({ name: _path.replace(".md", ''), metadata })
 
-					const github_owner = metadata['github_owner']
-					const github_repo = metadata['github_repo']
-					const github_page_format = metadata['github_page_format'] === 'true'
+					// check is supabase source
+					const supabase_repo = metadata['repo_url']
+					const supabase_root = metadata['supabase_root'] === 'true'
 
-					if (typeof github_owner === 'string' && typeof github_repo === 'string') {
-						const commit = await getLatestCommitSha(github_owner, github_repo)
-						// const markdown_files = await getFilesFromCommit(github_owner, github_repo, commit)
-
-						const data = await loadAssetTreeFromGitHub(cur_root, github_owner, github_repo, commit)
-						const new_root = data.props.root
-						cur_root = new_root
-						cur_root.github_remote = {
-							owner: github_owner,
-							repo: github_repo,
-							commit_sha: commit,
-							page_format: github_page_format
+					if (typeof supabase_repo === 'string') {
+						if (supabase_root) {
+							const data = await loadAssetTreeFromSupabase(supabase_repo);
+							cur_root.children = data.children;
+							items = [...items, ...data.items]
 						}
-						items = [...items, ...data.props.items]
-						image_paths = [...image_paths, ...data.props.image_paths]
 					}
 
 					continue;
@@ -115,189 +105,101 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 			items,
 			tags,
 			keywords,
-			image_paths
 		}
 	};
 }
 
-const loadAssetTreeFromGitHub = async (root: Item, github_owner: string, github_repo: string, commit_sha: string) => {
-	const items: SearchItem[] = []
-	const image_paths: string[] = []
-
-	try {
-		const commit_info = await getCommitInfoFromPath(github_owner, github_repo, 'files.yaml', commit_sha)
-
-		const yaml_string = decodeContentFromCommitInfo(commit_info)
-		const parsed = parse(yaml_string)
-
-		interface Directory {
-			name: string
-			directories?: Directory[]
-			files?: {
-				name: string
-				page?: boolean
-				tags?: string[]
-				keywords?: string[]
-				type?: string
-			}[]
-		}
-
-		const iterate = async (cur_root: Item, directories: Directory[], cur_dir: string) => {
-			for (const dir of directories) {
-				const new_dir: Item = {
-					name: dir.name,
-					github_remote: {
-						owner: github_owner,
-						repo: github_repo,
-						commit_sha: commit_sha
-					}
-				}
-
-				let path = `${cur_dir}/${dir.name}`
-
-				if (dir.directories) {
-					new_dir.children = []
-					iterate(new_dir, dir.directories, path)
-				}
-
-				if (dir.files) {
-					const file = dir.files.find(item => item.name === 'index.md')
-					let check_md = false
-
-					const image_files = dir.files.filter(item => item.type === 'image')
-					for (const file of image_files) {
-						image_paths.push(`${path}/${file.name}`)
-					}
-
-					if (file) {
-						if (!file.page) {
-							const new_file = {
-								name: 'index',
-								github_remote: {
-									owner: github_owner,
-									repo: github_repo,
-									commit_sha: commit_sha,
-									page_format: file.page
-								}
-							}
-							new_dir.children?.unshift(new_file)
-							path += '/index'
-						} else {
-							check_md = true
-						}
-						items.push({
-							path: path,
-							tags: file.tags,
-							keywords: file.keywords
-						})
-					} else {
-						check_md = true
-					}
-
-					if (check_md) {
-						const markdown_files = dir.files.filter(item => item.name !== 'index.md' && item.name.endsWith('.md'))
-
-						for (const file of markdown_files) {
-							items.push({
-								path: `${path}/${file.name}`,
-								tags: file.tags,
-								keywords: file.keywords
-							})
-						}
-					}
-				}
-
-				cur_root.children?.push(new_dir)
-			}
-		}
-
-		iterate(root, parsed.directories, 'ctf-writeups')
-	} catch (e) {
-		if (e instanceof Error)
-			throw error(404, e.message);
+const fixParamsPath = (path: string) => {
+	let params_path = path
+	if (params_path.endsWith('/index')) {
+		params_path = params_path.replace('/index', '')
+	} else if (params_path.endsWith('/index.md')) {
+		params_path = params_path.replace('/index.md', '')
 	}
-
-	return {
-		props: {
-			root,
-			items,
-			image_paths
-		}
-	};
+	return params_path
 }
 
-export const loadAssetMetadataFromGithub = async (root: Item) => {
-	const items: SearchItem[] = []
+const buildFileStructure = (paths: string[]): Item[] => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const root: Record<string, any> = {};
 
-	// special metadata for search and filtering
-	const tags: Set<string> = new Set()
-	const keywords: Set<string> = new Set()
+  for (const path of paths) {
+    const parts = path.split("/");
+    let current = root;
 
-	const traverse = async (item: Item) => {
-		if (item.github_remote) {
-			const res = await getFilesFromCommit(item.github_remote.owner, item.github_remote.repo, item.github_remote.commit_sha)
+    for (const part of parts) {
+      if (!current[part]) {
+        current[part] = {};
+      }
+      current = current[part];
+    }
+  }
 
-			for (const file of res) {
-				if (!file.path?.endsWith('index.md')) {
-					continue
-				}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function buildItems(node: Record<string, any>, name: string): Item {
+    const keys = Object.keys(node);
 
-				let path = file.path
-				if (item.github_remote?.page_format) {
-					path = path.replace('/index.md', '')
-				}
+    if (keys.length === 0) {
+      return { name: name.replace(/\.md$/, "") };
+    }
 
-				if (!file.sha) {
-					throw error(500, "Github commit sha is empty.")
-				}
+    const hasIndex = keys.includes("index.md");
+    const hasReadme = keys.includes("README.md");
+    const children = keys
+      .filter((key) => key !== "index.md" && key !== "README.md")
+      .map((key) => buildItems(node[key], key))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-				const content = await getFileContentFromBlob(item.github_remote.owner, item.github_remote.repo, file.sha)
+    if (hasIndex) {
+      if (children.length === 0) {
+        return { name: name.replace(/\.md$/, "") };
+      } else {
+        return { name, children: [{ name: "index" }, ...children] };
+      }
+    }
 
-				if (content.content == undefined) {
-					throw error(500, "Content from commit is empty.")
-				}
+    if (hasReadme) {
+      if (children.length === 0) {
+        return { name: name.replace(/\.md$/, "") };
+      } else {
+        return { name, children: [{ name: "index" }, ...children] };
+      }
+    }
 
-				if (content.encoding !== 'base64') {
-					throw error(500, 'Expected content encoding to be base64.')
-				}
+    return { name, children };
+  }
 
-				const markdownContent = atob(content.content);
-				const metadata = parseMetadata(markdownContent)
+  const result = Object.keys(root)
+    .map((key) => buildItems(root[key], key))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-				items.push({
-					path: `${item.name}/${path}`,
-					tags: metadata?.tags,
-					keywords: metadata?.keywords,
-					date: metadata?.date,
-					watched: metadata?.watched
-				});
+  const topLevelReadmeIndex = result.findIndex(item => item.name === "README");
+  if (topLevelReadmeIndex !== -1) {
+    const readmeItem = result.splice(topLevelReadmeIndex, 1)[0];
+    result.unshift({ name: "index", children: readmeItem.children });
+  }
 
-				if (metadata['tags'] && Array.isArray(metadata['tags']))
-					metadata['tags'].forEach(tag => {
-						tags.add(tag)
-					});
-				if (metadata['keywords'] && Array.isArray(metadata['keywords']))
-					metadata['keywords'].forEach(keyword => {
-						keywords.add(keyword)
-					});
-			}
-		}
+  return result;
+}
 
-		// Recurse into children
-		if (item.children) {
-			for (const child of item.children) {
-				await traverse(child);
-			}
-		}
-	};
+const loadAssetTreeFromSupabase = async (supabase_repo: string) => {
+	const items: SearchItem[] = [];
+	const posts = await getAllPostsFromRepo(supabase_repo);
 
-	await traverse(root);
+	const children = buildFileStructure(posts.map((post) => post.filePath))
+
+	posts.forEach((post) => {
+		const finalPath = pathLib.join(pathLib.basename(supabase_repo), post.filePath);
+
+		items.push({
+			path: fixParamsPath(finalPath),
+			tags: post.tags || [],
+			keywords: post.keywords || [],
+		})
+	})
+
 	return {
-		props: {
-			root,
-			items,
-			tags,
-			keywords
-		}
+		items,
+		children
 	};
 }

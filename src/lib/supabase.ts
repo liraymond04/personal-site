@@ -11,6 +11,10 @@ export const getPost = (repoUrl: string, filePath: string) => {
 	return db
 		.select({
 			title: post.title,
+			tags: post.tags,
+			keywords: post.keywords,
+			mediaFiles: post.mediaFiles,
+			layout: post.layout,
 			content: post.content
 		})
 		.from(post)
@@ -63,11 +67,11 @@ function isPathInString(input: string, path: string): boolean {
 }
 
 function replacePath(input: string, oldPath: string, newPath: string): string {
-	const regex = new RegExp(`(?:\\.\\/)?${oldPath}`, 'g');
-	return input.replace(regex, (match) => {
-		const cleanedMatch = match.startsWith('./') ? match.slice(2) : match;
-		return newPath + cleanedMatch.slice(oldPath.length);
-	});
+    const regex = new RegExp(`(?<!\\[)(?:\\.\\/)?${oldPath}(?!\\])`, 'g');
+    return input.replace(regex, (match) => {
+        const cleanedMatch = match.startsWith('./') ? match.slice(2) : match;
+        return newPath + cleanedMatch.slice(oldPath.length);
+    });
 }
 
 export const replaceRemoteImagePaths = async (content: string, repoUrl: string, filePath: string) => {
@@ -87,7 +91,7 @@ export const replaceRemoteImagePaths = async (content: string, repoUrl: string, 
 		if (isPathInString(finalContent, rel)) {
 			const { data } = supabase
 				.storage
-				.from('images')
+				.from('files')
 				.getPublicUrl(path.join(repoUrl, file))
 
 			if (data?.publicUrl) {
