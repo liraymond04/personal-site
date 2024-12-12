@@ -56,6 +56,7 @@ const run: PageServerLoad = async ({ params }) => {
     ) {
       const result = await getPost(metadata['repo_url'], metadata['file_path']);
       const finalContent = await replaceRemoteImagePaths(result[0]?.content, metadata['repo_url'], metadata['file_path']);
+      metadata['layout'] = result[0]?.layout || 'project-page';
 
       return {
         props: {
