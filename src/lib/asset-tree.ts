@@ -87,7 +87,7 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 		}
 	} catch (e) {
 		if (e instanceof Error)
-			throw error(404, e.message)
+			error(404, e.message);
 	}
 
 	if (root.children) {
