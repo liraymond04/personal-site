@@ -32,7 +32,7 @@
 
 {#await data.streaming.data}
 	<div class="p-8 flex justify-center">
-		<span class="loading loading-spinner loading-lg" />
+		<span class="loading loading-spinner loading-lg"></span>
 	</div>
 {:then source}
 	{#if source?.props.is_file}

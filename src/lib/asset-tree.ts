@@ -61,9 +61,14 @@ export const loadAssetTree = async (dir: string, root: Item, files: Record<strin
 					const supabase_repo = metadata['repo_url']
 					const supabase_root = metadata['supabase_root'] === 'true'
 
+					let start_root = '';
+					if (metadata['start_root'] && !Array.isArray(metadata['start_root'])) {
+						start_root = metadata['start_root'];
+					}
+
 					if (typeof supabase_repo === 'string') {
 						if (supabase_root) {
-							const data = await loadAssetTreeFromSupabase(supabase_repo);
+							const data = await loadAssetTreeFromSupabase(supabase_repo, start_root);
 							cur_root.children = data.children;
 							items = [...items, ...data.items]
 						}
@@ -120,76 +125,79 @@ const fixParamsPath = (path: string) => {
 }
 
 const buildFileStructure = (paths: string[]): Item[] => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const root: Record<string, any> = {};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const root: Record<string, any> = {};
 
-  for (const path of paths) {
-    const parts = path.split("/");
-    let current = root;
+	for (const path of paths) {
+		const parts = path.split("/");
+		let current = root;
 
-    for (const part of parts) {
-      if (!current[part]) {
-        current[part] = {};
-      }
-      current = current[part];
-    }
-  }
+		for (const part of parts) {
+			if (!current[part]) {
+				current[part] = {};
+			}
+			current = current[part];
+		}
+	}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function buildItems(node: Record<string, any>, name: string): Item {
-    const keys = Object.keys(node);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function buildItems(node: Record<string, any>, name: string): Item {
+		const keys = Object.keys(node);
 
-    if (keys.length === 0) {
-      return { name: name.replace(/\.md$/, "") };
-    }
+		if (keys.length === 0) {
+			return { name: name.replace(/\.md$/, "") };
+		}
 
-    const hasIndex = keys.includes("index.md");
-    const hasReadme = keys.includes("README.md");
-    const children = keys
-      .filter((key) => key !== "index.md" && key !== "README.md")
-      .map((key) => buildItems(node[key], key))
-      .sort((a, b) => a.name.localeCompare(b.name));
+		const hasIndex = keys.includes("index.md");
+		const hasReadme = keys.includes("README.md");
+		const children = keys
+			.filter((key) => key !== "index.md" && key !== "README.md")
+			.map((key) => buildItems(node[key], key))
+			.sort((a, b) => a.name.localeCompare(b.name));
 
-    if (hasIndex) {
-      if (children.length === 0) {
-        return { name: name.replace(/\.md$/, "") };
-      } else {
-        return { name, children: [{ name: "index" }, ...children] };
-      }
-    }
+		if (hasIndex) {
+			if (children.length === 0) {
+				return { name: name.replace(/\.md$/, "") };
+			} else {
+				return { name, children: [{ name: "index" }, ...children] };
+			}
+		}
 
-    if (hasReadme) {
-      if (children.length === 0) {
-        return { name: name.replace(/\.md$/, "") };
-      } else {
-        return { name, children: [{ name: "index" }, ...children] };
-      }
-    }
+		if (hasReadme) {
+			if (children.length === 0) {
+				return { name: name.replace(/\.md$/, "") };
+			} else {
+				return { name, children: [{ name: "index" }, ...children] };
+			}
+		}
 
-    return { name, children };
-  }
+		return { name, children };
+	}
 
-  const result = Object.keys(root)
-    .map((key) => buildItems(root[key], key))
-    .sort((a, b) => a.name.localeCompare(b.name));
+	const result = Object.keys(root)
+		.map((key) => buildItems(root[key], key))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
-  const topLevelReadmeIndex = result.findIndex(item => item.name === "README");
-  if (topLevelReadmeIndex !== -1) {
-    const readmeItem = result.splice(topLevelReadmeIndex, 1)[0];
-    result.unshift({ name: "index", children: readmeItem.children });
-  }
+	const topLevelReadmeIndex = result.findIndex(item => item.name === "README");
+	if (topLevelReadmeIndex !== -1) {
+		const readmeItem = result.splice(topLevelReadmeIndex, 1)[0];
+		result.unshift({ name: "index", children: readmeItem.children });
+	}
 
-  return result;
+	return result;
 }
 
-const loadAssetTreeFromSupabase = async (supabase_repo: string) => {
+const loadAssetTreeFromSupabase = async (supabase_repo: string, start_root: string) => {
 	const items: SearchItem[] = [];
 	const posts = await getAllPostsFromRepo(supabase_repo);
+	posts.map((post) => post.filePath = pathLib.relative(start_root, post.filePath));
 
 	const children = buildFileStructure(posts.map((post) => post.filePath))
 
 	posts.forEach((post) => {
-		const finalPath = pathLib.join(pathLib.basename(supabase_repo), post.filePath);
+		let file_path = post.filePath;
+		if (file_path.endsWith(".md")) file_path = file_path.replace(".md", "");
+		const finalPath = pathLib.join(pathLib.basename(supabase_repo), file_path);
 
 		items.push({
 			path: fixParamsPath(finalPath),

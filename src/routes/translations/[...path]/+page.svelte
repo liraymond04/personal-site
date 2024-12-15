@@ -10,7 +10,7 @@
 
 	let source = writable(null);
 	let description = writable(
-		"Explore Raymond Li's blog featuring in-depth technical articles as a Computer Science and Mathematics major at the University of British Columbia (UBC). Dive into topics like algorithms, software development, data science, mathematical theories, and more. "
+		"CN to EN translations for Re:Zero side stories"
 	);
 
 	$: (async () => {

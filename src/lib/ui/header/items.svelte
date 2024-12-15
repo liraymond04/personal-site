@@ -23,6 +23,7 @@
 		<ul class="p-2">
 			<li><a href="/articles/technical" on:click={closelink}>Technical</a></li>
 			<li><a href="/articles/personal" on:click={closelink}>Personal</a></li>
+			<li><a href="/translations" on:click={closelink}>Translations</a></li>
 		</ul>
 	</details>
 </li>
