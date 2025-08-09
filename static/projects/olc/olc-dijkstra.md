@@ -1,102 +1,29 @@
 ---
 layout: project-post
 title: olc-dijkstra
-tags: programming, data structures & algorithms, OLC
-keywords: C++, graph theory, shortest path
-date: 2023-08-13
-watched: 2021-07-25
-description: Example blog post with markdown styling tests.
+tags: programming, data-structures-and-algorithms, c++, visualization, olc
+keywords: C++, graph theory, shortest path, Dijkstra's algorithm, visualization
+date: 2024-08-09
+description: A GUI implementation and interactive visualization of Dijkstra's shortest path algorithm using the OneLoneCoder Pixel Game Engine.
 ---
 
 # olc-dijkstra
 
-another test
+This project is a graphical user interface (GUI) implementation of **Dijkstra's shortest path algorithm** using the C++-based **OneLoneCoder Pixel Game Engine (OLC PGE)**. It provides an interactive visualization of the algorithm in action, which is a powerful way to understand how it works.
 
-## test markdown page
+![dijkstra](https://user-images.githubusercontent.com/39678448/184523029-138e6915-8f88-4b95-a595-20350363bdbf.gif)
 
-test body
+## Project Overview
 
-### test
+Dijkstra's algorithm is a fundamental algorithm in graph theory that finds the shortest paths between nodes in a graph. This project brings the algorithm to life by allowing users to create a graph and then watch the algorithm's greedy approach unfold as it systematically determines the shortest path from a starting node to all other reachable nodes. This makes complex concepts like `distance relaxation` and `priority queues` much more intuitive to grasp.
 
-test [body](https://google.com)
-another [route](olc-rts.md)
+### Technologies
+- **C++:** The core programming language for the entire project.
+- **OneLoneCoder Pixel Game Engine (OLC PGE):** A lightweight and easy-to-use library for creating graphical applications and games with minimal boilerplate. It handles the rendering and user input, making it a perfect tool for visualizations like this one.
+- **Graph Data Structures:** The project likely uses an **adjacency list** or an **adjacency matrix** to represent the graph, and a **min-priority queue** to efficiently select the next node to visit.
 
-<https://example.com>
+### What is Dijkstra's Algorithm?
 
-```js
-import { page } from '$app/stores'
+Dijkstra's algorithm solves the single-source shortest path problem for a graph with non-negative edge weights. It works by keeping a set of visited nodes and a list of distances from the source node to every other node. It repeatedly selects the unvisited node with the smallest known distance and updates the distances of its neighbors if a shorter path is found. This process continues until all nodes have been visited, resulting in the shortest path from the source to all other nodes.
 
-export let data;
-```
-
-#### test
-
-test body `another`
-
-##### test
-
-__test__
-***~~body~~***
-
-> with a quote
-
-[hobbit-hole][1]
-
-[hobbits][2]
-
-Here we go [^1].
-
-[1]: <https://en.wikipedia.org/wiki/Hobbit#Lifestyle> (Hobbit lifestyles)
-[2]: <https://en.wikipedia.org/wiki/Hobbit#Lifestyle>
-
-###### test
-
-
-let's
-~~**fucking**~~
-*goooo* :pray:
-
-***
-
-this is a list:
- - first `item`
- - second item
-    - third item
-
-```cpp
-#include <iostream>
-
-int main() {
-    std::cout << "Hello world!" << std::endl;
-
-    return 0;
-}
-```
-
-* This is a list
-* With two items
-  1. And a sublist
-      3. different
-            4. ordered
-      5. start
-  2. That is ordered
-      * With another
-  * Sublist inside
-
-| And this is | A table |
-|-------------|---------|
-| With two    | columns |
-
-1. my
-2. ordered
-    1. another
-    2. ordered
-3. list
-
-$$
-\dfrac{n!}{k!(n-k)!} = \binom{n}{k}
-$$
-
-[^1]: This is a footnote
-
-inline $2=2$
+This project beautifully visualizes this process, showing the shortest path being constructed in real-time.
