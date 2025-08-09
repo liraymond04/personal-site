@@ -8,7 +8,7 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section id="hero" class="text-center py-20 md:py-32">
+<section id="hero" class="text-center py-8 md:py-24">
 	<div class="flex flex-col items-center">
 		<!-- svelte-ignore a11y_img_redundant_alt -->
 		<img src="./images/pfp.jpg" alt="Profile Picture" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-blue-400 mb-6 object-cover shadow-lg">
@@ -21,7 +21,7 @@
 </section>
 
 <!-- About Me Section -->
-<section id="about" class="py-16 md:py-24">
+<section id="about" class="py-8 md:py-24">
 	<h2 class="text-3xl md:text-4xl font-bold text-center mb-12">About Me</h2>
 	<div class="max-w-3xl mx-auto bg-gray-800 p-8 rounded-xl shadow-xl border border-gray-700">
 		<p class="text-lg text-gray-300 leading-relaxed text-justify">
@@ -31,7 +31,7 @@
 </section>
 
 <!-- Projects Section -->
-<section id="projects" class="py-16 md:py-24">
+<section id="projects" class="py-8 md:py-24">
 	<h2 class="text-3xl md:text-4xl font-bold text-center mb-12">My Projects</h2>
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 		<!-- Game Engine Project -->
@@ -91,7 +91,7 @@
 </section>
 
 <!-- Skills Section -->
-<section id="skills" class="py-16 md:py-24">
+<section id="skills" class="py-8 md:py-24">
 	<h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Skills</h2>
 	<div class="max-w-5xl mx-auto flex flex-wrap justify-center gap-4">
 		<div class="bg-gray-800 text-gray-300 px-6 py-3 rounded-full shadow-lg border border-gray-700 text-lg transition-transform duration-300 hover:scale-105">C++</div>
@@ -108,7 +108,7 @@
 </section>
 
 <!-- Contact Section -->
-<section id="contact" class="py-16 md:py-24">
+<section id="contact" class="py-8 md:py-24">
 	<h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Get In Touch</h2>
 	<div class="max-w-2xl mx-auto text-center">
 		<p class="text-lg text-gray-300 mb-8">

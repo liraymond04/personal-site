@@ -16,8 +16,8 @@
 	};
 </script>
 
-<div class="m-2 z-50">
-	<div class="navbar bg-base-100 rounded-lg drop-shadow-lg">
+<div class="z-50 relative">
+	<div class="navbar bg-base-100 drop-shadow-lg">
 		<div class="grow-0 w-[50%]">
 			<div
 				class="dropdown"
@@ -48,7 +48,7 @@
 				</div>
 				<ul
 					tabindex="0"
-					class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+					class="menu menu-sm dropdown-content mt-3 z-[9999] p-2 shadow bg-base-100 rounded-box w-52"
 					role="menu"
 				>
 					<Items />
@@ -62,7 +62,7 @@
 			</ul>
 		</div>
 		<!-- divider to force last component to rightmost end -->
-		<div class="sm:hidden grow" />
+		<div class="sm:hidden grow"></div>
 		<div class="grow-0 w-[50%] justify-end">
 			<a class="btn" href="/about">About</a>
 		</div>
