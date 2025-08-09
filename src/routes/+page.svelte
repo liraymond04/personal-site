@@ -13,7 +13,7 @@
 		<!-- svelte-ignore a11y_img_redundant_alt -->
 		<img src="./images/pfp.jpg" alt="Profile Picture" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-blue-400 mb-6 object-cover shadow-lg">
 		<h1 class="text-4xl md:text-6xl font-extrabold text-white mb-2">Hello, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">Raymond Li</span>.</h1>
-		<p class="text-lg md:text-2xl text-gray-400 mb-8">A Computer Science and Mathematics student passionate about building innovative software.</p>
+		<p class="text-lg md:text-2xl text-gray-400 mb-8">A Computer Science and Mathematics student passionate about building software.</p>
 		<div class="flex space-x-4">
 			<Social size={32} />
 		</div>
