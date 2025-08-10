@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Raymond Li | Software Developer Portfolio</title>
+	<title>liraymond04</title>
 	<meta
 		name="description"
 		content="Welcome to Raymond Li's personal site, a Computer Science and Mathematics major at the University of British Columbia (UBC). Discover my latest projects, professional background, blog posts, and insights. Explore my portfolio, connect with me, and learn more about my passions and expertise."
