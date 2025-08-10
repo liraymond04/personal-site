@@ -20,7 +20,7 @@ Dijkstra's algorithm is a fundamental algorithm in graph theory that finds the s
 ### Technologies
 - **C++:** The core programming language for the entire project.
 - **OneLoneCoder Pixel Game Engine (OLC PGE):** A lightweight and easy-to-use library for creating graphical applications and games with minimal boilerplate. It handles the rendering and user input, making it a perfect tool for visualizations like this one.
-- **Graph Data Structures:** The project likely uses an **adjacency list** or an **adjacency matrix** to represent the graph, and a **min-priority queue** to efficiently select the next node to visit.
+- **Graph Data Structures:** The project uses an **adjacency list** to represent the graph, and a **min-priority queue** to efficiently select the next node to visit.
 
 ### What is Dijkstra's Algorithm?
 

@@ -71,7 +71,7 @@
 							>Lua</span
 						>
 						<span class="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded-full"
-							>OpenGL</span
+							>Raylib</span
 						>
 					</div>
 					<div class="flex space-x-4">
@@ -98,7 +98,7 @@
 					</p>
 					<div class="flex flex-wrap gap-2 mb-4">
 						<span class="bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full"
-							>C++</span
+							>C99</span
 						>
 						<span class="bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-full"
 							>Linear Algebra</span
@@ -114,6 +114,20 @@
 							aria-label="GitHub Repository"
 						>
 							<i class="fab fa-github"></i> GitHub
+						</a>
+						<a
+							href="/demo/olc-rts"
+							class="text-blue-400 hover:text-blue-500 transition-colors duration-150"
+							aria-label="Live Demo"
+						>
+							<i class="fas fa-external-link-alt"></i> Live Demo
+						</a>
+						<a
+							href="/projects/olc/olc-rts"
+							class="text-blue-400 hover:text-blue-500 transition-colors duration-150"
+							aria-label="Read More"
+						>
+							<i class="fas fa-external-link-alt"></i> Read More
 						</a>
 					</div>
 				</div>
@@ -137,6 +151,9 @@
 						>
 						<span class="bg-cyan-600 text-white text-xs font-semibold px-2 py-1 rounded-full"
 							>Tailwind CSS</span
+						>
+						<span class="bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-full"
+							>Supabase</span
 						>
 					</div>
 					<div class="flex space-x-4">
