@@ -83,6 +83,13 @@
 							<i class="fab fa-github"></i> GitHub
 						</a>
 						<a
+							href="/demo/game-engine"
+							class="text-blue-400 hover:text-blue-500 transition-colors duration-150"
+							aria-label="Live Demo"
+						>
+							<i class="fas fa-external-link-alt"></i> Live Demo
+						</a>
+						<a
 							href="/projects/c99/game-engine"
 							class="text-blue-400 hover:text-blue-500 transition-colors duration-150"
 							aria-label="Read More"
