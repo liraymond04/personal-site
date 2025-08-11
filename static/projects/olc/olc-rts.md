@@ -12,7 +12,8 @@ description: A simple pixel-style hexagonal grid-based real-time strategy game b
 This project is a simple Real-Time Strategy (RTS) game created from scratch using the **OneLoneCoder Pixel Game Engine (OLC PGE)**. It features a hexagonal tile-based map rendered a faux-3D style to place and move units around. The game serves as a great example of applying fundamental game development concepts, mathematics, data structures, and algorithms to create a playable experience and a unique visual style.
 
 ![olc-rts](https://github.com/liraymond04/olc-rts/assets/39678448/3e727835-1750-4ab7-89ab-e193114c25bc)
-[Live Demo](https://www.liraymond04.ca/demo/olc-rts)
+
+[Live Demo](https://liraymond04.ca/demo/olc-rts)
 
 ## Project Features
 

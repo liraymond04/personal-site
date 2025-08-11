@@ -13,7 +13,7 @@ Game engine built in C99 using [raylib](https://github.com/raysan5/raylib) and L
 
 <video src="https://github.com/user-attachments/assets/bda35061-574d-4f18-bf39-d0aec892f65c" controls muted></video>
 
-[Live Demo](https://www.liraymond04.ca/demo/game-engine)
+[Live Demo](https://liraymond04.ca/demo/game-engine)
 
 Features:
 - Cross platform
