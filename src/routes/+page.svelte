@@ -82,6 +82,13 @@
 						>
 							<i class="fab fa-github"></i> GitHub
 						</a>
+						<a
+							href="/projects/c99/game-engine"
+							class="text-blue-400 hover:text-blue-500 transition-colors duration-150"
+							aria-label="Read More"
+						>
+							<i class="fas fa-external-link-alt"></i> Read More
+						</a>
 					</div>
 				</div>
 			</div>
@@ -157,6 +164,13 @@
 						>
 					</div>
 					<div class="flex space-x-4">
+						<a
+							href="https://github.com/liraymond04/personal-site"
+							class="text-purple-400 hover:text-purple-500 transition-colors duration-150"
+							aria-label="GitHub Repository"
+						>
+							<i class="fab fa-github"></i> GitHub
+						</a>
 						<a
 							href="/"
 							class="text-blue-400 hover:text-blue-500 transition-colors duration-150"
